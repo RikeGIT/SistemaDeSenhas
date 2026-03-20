@@ -7,3 +7,14 @@
 2. Configure usuário e senha no application.properties
 
 3. Rode o projeto e seja feliz.
+
+# Rotas
+## Crud Senhas
+
+| Método | Endpoint     | Função    |
+| ------ | ------------ | --------- |
+| POST   | /senhas      | Criar     |
+| GET    | /senhas      | Listar    |
+| GET    | /senhas/{id} | Buscar    |
+| PUT    | /senhas/{id} | Atualizar |
+| DELETE | /senhas/{id} | Deletar   |

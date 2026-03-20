@@ -9,13 +9,14 @@ import lombok.Setter;
 @Entity
 @Table(name = "prioridades")
 
+// Getters e Setters usando Lombok
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
 public class Prioridade {
-
+    //  Anotation para gerar Id automaticamente
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
