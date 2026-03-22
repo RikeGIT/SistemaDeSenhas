@@ -1,4 +1,4 @@
-package duck.com.example.SistemaDeSenhas.Entity.Enums;
+package duck.com.example.SistemaDeSenhas.entity.Enums;
 
 public enum StatusSenha {
     AGUARDANDO,

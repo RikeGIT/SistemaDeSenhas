@@ -1,4 +1,4 @@
-package duck.com.example.SistemaDeSenhas.Entity;
+package duck.com.example.SistemaDeSenhas.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,20 +7,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "prioridades")
-
+@Table(name = "servicos")
 // Getters e Setters usando Lombok
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Prioridade {
+public class Servico {
     //  Anotation para gerar Id automaticamente
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nome;
-    private Integer peso;
+    private String descricao;
+    private String sigla;
 }

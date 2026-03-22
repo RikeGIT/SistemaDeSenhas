@@ -1,6 +1,6 @@
-package duck.com.example.SistemaDeSenhas.Entity;
+package duck.com.example.SistemaDeSenhas.entity;
 
-import duck.com.example.SistemaDeSenhas.Entity.Enums.StatusSenha;
+import duck.com.example.SistemaDeSenhas.entity.Enums.StatusSenha;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

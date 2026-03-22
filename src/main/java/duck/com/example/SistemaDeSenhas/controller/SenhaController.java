@@ -1,14 +1,14 @@
-package duck.com.example.SistemaDeSenhas.Controller;
+package duck.com.example.SistemaDeSenhas.controller;
 
-import duck.com.example.SistemaDeSenhas.Entity.Senha;
-import duck.com.example.SistemaDeSenhas.Repository.SenhaRepository;
+import duck.com.example.SistemaDeSenhas.entity.Senha;
+import duck.com.example.SistemaDeSenhas.repository.SenhaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/senhas")
+@RequestMapping("/senha")
 public class SenhaController {
 
     @Autowired

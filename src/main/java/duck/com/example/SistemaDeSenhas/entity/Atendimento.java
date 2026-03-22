@@ -1,4 +1,4 @@
-package duck.com.example.SistemaDeSenhas.Entity;
+package duck.com.example.SistemaDeSenhas.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
