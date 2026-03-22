@@ -18,8 +18,10 @@ public class Guiche {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Integer numero;
-
     private String setor;
+    private boolean ocupado;
+    @ManyToOne
+    @JoinColumn(name = "servico_id")
+    private Servico servico;
 }
