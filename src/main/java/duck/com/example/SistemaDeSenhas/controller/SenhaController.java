@@ -2,10 +2,15 @@ package duck.com.example.SistemaDeSenhas.controller;
 
 import duck.com.example.SistemaDeSenhas.entity.Senha;
 import duck.com.example.SistemaDeSenhas.repository.SenhaRepository;
+import duck.com.example.SistemaDeSenhas.service.SenhaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/senha")
@@ -14,10 +19,21 @@ public class SenhaController {
     @Autowired
     private SenhaRepository senhaRepository;
 
+    @Autowired
+    private SenhaService senhaService;
+
     // Criar senha
     @PostMapping
-    public Senha criar(@RequestBody Senha senha) {
-        return senhaRepository.save(senha);
+    public ResponseEntity<Map<String, Object>> criar(@RequestBody SenhaRequestDTO request) {
+        Senha novaSenha = senhaService.gerarNovaSenha(request.getServicoId(), request.getPrioridadeId());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensagem", "Senha gerada com sucesso!");
+        response.put("codigo", novaSenha.getCodigo());
+        response.put("servico", novaSenha.getServico().getNome());
+        response.put("dataHora", novaSenha.getDataHoraGeracao().toString());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // Listar todas

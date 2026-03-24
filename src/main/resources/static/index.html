@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Totem de Senhas</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        .btn { padding: 20px; margin: 10px; font-size: 18px; cursor: pointer; border-radius: 8px; border: none; }
+        .normal { background-color: #e0e0e0; }
+        .prioritario { background-color: #ffcc00; font-weight: bold; }
+        #resultado { margin-top: 30px; padding: 20px; border: 1px solid #ccc; display: none; }
+    </style>
+</head>
+<body>
+<h1>Emissão de Senha</h1>
+<div>
+    <h3>Caixa</h3>
+    <button class="btn normal" onclick="gerarSenha(1, 1)">Normal</button>
+    <button class="btn prioritario" onclick="gerarSenha(1, 2)">Prioritário</button>
+</div>
+
+<div id="resultado">
+    <h2 id="msg"></h2>
+    <h1 id="senhaCodigo" style="font-size: 60px; color: #007bff;"></h1>
+    <p id="detalhes"></p>
+</div>
+
+<script>
+    async function gerarSenha(servicoId, prioritarioId) {
+        const payload = {
+            servicoId: servicoId,
+            prioridadeId: prioritarioId
+        };
+
+        try {
+            const response = await fetch('/senha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            console.log("O que o Java enviou:", data);
+
+            document.getElementById('resultado').style.display = 'block';
+            document.getElementById('msg').innerText = data.mensagem || "Sem mensagem";
+            document.getElementById('senhaCodigo').innerText = data.codigo || "Erro Código";
+            document.getElementById('detalhes').innerText = `Serviço: ${data.servico || 'N/A'}`;
+        } catch (error) {
+            alert('Erro ao gerar senha. Verifique se o servidor está rodando.');
+        }
+    }
+</script>
+</body>
+</html>
