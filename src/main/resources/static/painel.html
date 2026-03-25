@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Senhas</title>
+
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            background-color:#f4f4f9;
+            color:#333;
+            text-align:center;
+        }
+
+        h1{
+            font-size:50px;
+        }
+
+        #lista{
+            margin-top:40px;
+        }
+
+        .item{
+            font-size:40px;
+            margin:20px auto;
+            padding:20px;
+            background:#e3f2fd;
+            border-radius:10px;
+            max-width:400px;
+            border:2px solid #2196f3;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>Painel de Atendimento</h1>
+
+<h2>Senhas em Atendimento</h2>
+
+<div id="lista"></div>
+
+<script>
+
+    async function atualizarPainel(){
+
+        try{
+
+            const response = await fetch("/senha")
+            const senhas = await response.json()
+
+            const lista = document.getElementById("lista")
+
+            lista.innerHTML = ""
+
+            senhas.forEach(senha => {
+
+                if(senha.status === "CHAMADA"){
+
+                    const div = document.createElement("div")
+
+                    div.className = "item"
+
+                    div.innerText = "Senha " + senha["codigo"]
+
+                    lista.appendChild(div)
+
+                }
+
+            })
+
+        }catch(error){
+
+            console.log("Erro ao atualizar painel")
+
+        }
+
+    }
+
+    setInterval(atualizarPainel,2000)
+
+    atualizarPainel()
+
+</script>
+
+</body>
+</html>
