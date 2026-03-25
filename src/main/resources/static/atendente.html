@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Painel do Atendente - Sistema de Senhas</title>
     <style>
-        body { font-family: sans-serif; padding: 40px; background-color: #f4f4f9; }
+        body { font-family: sans-serif, Arial; padding: 40px; background-color: #f4f4f9; }
         .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         select, button { width: 100%; padding: 15px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: 1px solid #ddd; }
         button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
@@ -14,8 +14,11 @@
 </head>
 <body>
 <div class="container">
+
     <h1>Guichê de Atendimento</h1>
-    <label>Selecione seu Guichê:</label>
+
+    <label for="guicheId">Selecione seu Guichê:</label>
+
     <select id="guicheId">
         <option value="4">Guichê 1 (Caixa)</option>
         <option value="5">Guichê 2 (Caixa)</option>
@@ -25,20 +28,37 @@
     <button onclick="chamarProximo()">CHAMAR PRÓXIMA SENHA</button>
 
     <div id="atendimentoAtual" class="info-atendimento">
+
         <h3>Atendimento em curso:</h3>
-        <p><strong>Senha:</strong> <span id="senhaChamada" style="font-size: 24px; color: #007bff;"></span></p>
+
+        <p>
+            <strong>Senha:</strong>
+            <span id="senhaChamada" style="font-size: 24px; color: #007bff;"></span>
+        </p>
+
         <p id="detalhesAtendimento"></p>
-        <button style="background-color: #dc3545;" onclick="finalizarAtendimento()">FINALIZAR ATENDIMENTO</button>
+
+        <button style="background-color: #dc3545;" onclick="finalizarAtendimento()">
+            FINALIZAR ATENDIMENTO
+        </button>
+
     </div>
+
 </div>
 
 <script>
+
     let atendimentoAtivoId = null;
 
     async function chamarProximo() {
+
         const guicheId = document.getElementById('guicheId').value;
+
         try {
-            const response = await fetch(`/atendimentos/chamar/${guicheId}`, { method: 'POST' });
+
+            const response = await fetch(`/atendimentos/chamar/${guicheId}`, {
+                method: 'POST'
+            });
 
             if (response.status === 204) {
                 alert("Não há senhas aguardando para este serviço.");
@@ -46,28 +66,54 @@
             }
 
             const data = await response.json();
-            atendimentoAtivoId = data.id;
+
+            atendimentoAtivoId = data?.id ?? null;
 
             document.getElementById('atendimentoAtual').style.display = 'block';
-            document.getElementById('senhaChamada').innerText = data.senha.codigo;
-            document.getElementById('detalhesAtendimento').innerText = `Iniciado em: ${new Date(data.dataHoraInicio).toLocaleTimeString()}`;
+
+            document.getElementById('senhaChamada').innerText =
+                data?.senha?.codigo ?? "N/A";
+
+            const horaInicio = data?.dataHoraInicio
+                ? new Date(data.dataHoraInicio).toLocaleTimeString()
+                : "N/A";
+
+            document.getElementById('detalhesAtendimento').innerText =
+                `Iniciado em: ${horaInicio}`;
+
         } catch (error) {
+
             alert("Erro ao chamar senha. Verifique se o guichê já está ocupado.");
+
         }
+
     }
 
     async function finalizarAtendimento() {
+
         if (!atendimentoAtivoId) return;
 
         try {
-            await fetch(`/atendimentos/finalizar/${atendimentoAtivoId}`, { method: 'PUT' });
+
+            await fetch(`/atendimentos/finalizar/${atendimentoAtivoId}`, {
+                method: 'PUT'
+            });
+
             alert("Atendimento finalizado com sucesso!");
+
             document.getElementById('atendimentoAtual').style.display = 'none';
+
             atendimentoAtivoId = null;
+
         } catch (error) {
+
             alert("Erro ao finalizar atendimento.");
+
         }
+
     }
+
 </script>
+
 </body>
 </html>
