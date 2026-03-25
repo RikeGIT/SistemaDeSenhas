@@ -60,20 +60,26 @@ public class AtendimentoService {
 
     @Transactional
     public void finalizarAtendimento(Long atendimentoId) {
-        // Quarta Parte: Finalizar atendimento e liberar guichê
         Atendimento atendimento = atendimentoRepository.findById(atendimentoId)
                 .orElseThrow(() -> new RuntimeException("Atendimento não encontrado"));
 
         atendimento.setDataHoraFim(LocalDateTime.now());
 
         Senha senha = atendimento.getSenha();
-        senha.setStatus(StatusSenha.FINALIZADA);
-
         Guiche guiche = atendimento.getGuiche();
-        guiche.setOcupado(false);
 
-        atendimentoRepository.save(atendimento);
-        senhaRepository.save(senha);
+        // Libera o guichê para o próximo
+        guiche.setOcupado(false);
         guicheRepository.save(guiche);
+
+        // Exclui a senha do banco de dados
+        atendimento.setSenha(null);
+        atendimentoRepository.save(atendimento);
+        senhaRepository.delete(senha);
+    }
+
+    public Atendimento buscarAtendimentoAtual(Long guicheId) {
+        return atendimentoRepository.findByGuicheIdAndDataHoraFimIsNull(guicheId)
+                .orElse(null);
     }
 }

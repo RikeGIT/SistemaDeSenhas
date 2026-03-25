@@ -19,11 +19,10 @@
 
     <label for="guicheId">Selecione seu Guichê:</label>
 
-    <select id="guicheId">
+    <select id="guicheId" onchange="verificarAtendimentoAtual()">
         <option value="1">Guichê 1 (Caixa)</option>
-        <option value="2">Guichê 2 (Caixa)</option>
-        <option value="3">Guichê 3 (Gerência)</option>
-        <option value="4">Guichê 4 (Suporte)</option>
+        <option value="3">Guichê 2 (Gerência)</option>
+        <option value="4">Guichê 3 (Suporte)</option>
     </select>
 
     <button onclick="chamarProximo()">CHAMAR PRÓXIMA SENHA</button>
@@ -89,6 +88,34 @@
         }
 
     }
+
+    async function verificarAtendimentoAtual() {
+    const guicheId = document.getElementById('guicheId').value;
+
+    // Esconde a área de atendimento antes de verificar
+    document.getElementById('atendimentoAtual').style.display = 'none';
+    atendimentoAtivoId = null;
+
+    try {
+       const response = await fetch(`/atendimentos/atual/${guicheId}`);
+
+            if (response.status === 200) {
+                const data = await response.json();
+
+                // Reativa a interface com os dados da senha que já estava sendo atendida
+                atendimentoAtivoId = data.id;
+                document.getElementById('atendimentoAtual').style.display = 'block';
+                document.getElementById('senhaChamada').innerText = data.senha.codigo;
+
+                const horaInicio = new Date(data.dataHoraInicio).toLocaleTimeString();
+                document.getElementById('detalhesAtendimento').innerText = `Retomado - Iniciado em: ${horaInicio}`;
+            }
+        } catch (error) {
+            console.error("Erro ao verificar atendimento atual", error);
+        }
+    }
+
+    window.onload = verificarAtendimentoAtual;
 
     async function finalizarAtendimento() {
 

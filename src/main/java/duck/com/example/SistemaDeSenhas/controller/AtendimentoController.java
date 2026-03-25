@@ -27,4 +27,13 @@ public class AtendimentoController {
         atendimentoService.finalizarAtendimento(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/atual/{guicheId}")
+    public ResponseEntity<Atendimento> buscarAtual(@PathVariable Long guicheId) {
+        Atendimento atendimento = atendimentoService.buscarAtendimentoAtual(guicheId);
+        if (atendimento == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(atendimento);
+    }
 }
