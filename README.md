@@ -10,7 +10,6 @@ Este projeto é um sistema de gestão de filas e atendimentos, permitindo a gera
 
 * Java 21
 * MySQL Server
-* Maven (ou utilize o `./mvnw` incluso no diretório)
 
 ---
 
@@ -59,13 +58,7 @@ INSERT INTO guiches (numero, setor, ocupado, servico_id) VALUES
 
 ## 🖥️ Interfaces Disponíveis
 
-Após rodar a aplicação:
-
-```bash
-./mvnw spring-boot:run
-```
-
-Acesse no navegador:
+Após rodar a aplicação, acesse no navegador:
 
 * **Totem de Senhas (Cliente):**
   http://localhost:8080/index.html
