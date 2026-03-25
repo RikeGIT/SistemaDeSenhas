@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Totem de Senhas</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
         .btn { padding: 20px; margin: 10px; font-size: 18px; cursor: pointer; border-radius: 8px; border: none; }
         .normal { background-color: #e0e0e0; }
         .prioritario { background-color: #ffcc00; font-weight: bold; }
@@ -13,10 +13,21 @@
 </head>
 <body>
 <h1>Emissão de Senha</h1>
+
 <div>
-    <h3>Caixa</h3>
-    <button class="btn normal" onclick="gerarSenha(1, 1)">Normal</button>
-    <button class="btn prioritario" onclick="gerarSenha(1, 2)">Prioritário</button>
+
+    <h3>Escolha o Serviço</h3>
+    <label for="servico"></label>
+    <select id="servico">
+        <option value="1">Caixa</option>
+        <option value="2">Gerência</option>
+    </select>
+
+    <h3>Escolha a Prioridade</h3>
+
+    <button class="btn normal" onclick="gerarSenha(false)">Normal</button>
+    <button class="btn prioritario" onclick="gerarSenha(true)">Prioritário</button>
+
 </div>
 
 <div id="resultado">
@@ -26,12 +37,17 @@
 </div>
 
 <script>
-    async function gerarSenha(servicoId, prioritarioId) {
+    async function gerarSenha(prioritario) {
+
+        const servicoId = document.getElementById("servico").value;
+
+        const prioridadeId = prioritario ? 2 : 1;
+
         const payload = {
             servicoId: servicoId,
-            prioridadeId: prioritarioId
+            prioridadeId: prioridadeId
         };
-
+        console.log(payload)
         try {
             const response = await fetch('/senha', {
                 method: 'POST',
@@ -40,12 +56,14 @@
             });
 
             const data = await response.json();
+
             console.log("O que o Java enviou:", data);
 
             document.getElementById('resultado').style.display = 'block';
-            document.getElementById('msg').innerText = data.mensagem || "Sem mensagem";
-            document.getElementById('senhaCodigo').innerText = data.codigo || "Erro Código";
-            document.getElementById('detalhes').innerText = `Serviço: ${data.servico || 'N/A'}`;
+            document.getElementById('msg').innerText = data["mensagem"] || "Sem mensagem";
+            document.getElementById('senhaCodigo').innerText = data["codigo"] || "Erro Código";
+            document.getElementById('detalhes').innerText = `Serviço: ${data["servico"] || 'N/A'}`;
+
         } catch (error) {
             alert('Erro ao gerar senha. Verifique se o servidor está rodando.');
         }
