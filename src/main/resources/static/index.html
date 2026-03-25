@@ -3,45 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <title>Totem de Senhas</title>
+
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        .btn { padding: 20px; margin: 10px; font-size: 18px; cursor: pointer; border-radius: 8px; border: none; }
-        .normal { background-color: #e0e0e0; }
-        .prioritario { background-color: #ffcc00; font-weight: bold; }
-        #resultado { margin-top: 30px; padding: 20px; border: 1px solid #ccc; display: none; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .btn {
+            margin-top: 20px;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            display: none;
+            border-radius: 8px;
+        }
     </style>
 </head>
+
 <body>
-<h1>Emissão de Senha</h1>
 
-<div>
+<div class="container">
+    <h1>Emissão de Senha</h1>
 
-    <h3>Escolha o Serviço</h3>
-    <label for="servico"></label>
-    <select id="servico">
-        <option value="1">Caixa</option>
-        <option value="2">Gerência</option>
-    </select>
+    <div class="field">
+        <label for="servico">Escolha o Serviço</label>
+        <select id="servico">
+            <option value="1">Caixa</option>
+            <option value="2">Gerência</option>
+            <option value="3">Suporte</option>
+        </select>
+    </div>
 
-    <h3>Escolha a Prioridade</h3>
+    <div class="field">
+        <label for="prioridades">Escolha a Prioridade</label>
+        <select id="prioridades">
+            <option value="1">Normal</option>
+            <option value="2">Gestante/Autista</option>
+            <option value="3">Idoso 60+</option>
+            <option value="4">Idoso 80+</option>
+        </select>
+    </div>
 
-    <button class="btn normal" onclick="gerarSenha(false)">Normal</button>
-    <button class="btn prioritario" onclick="gerarSenha(true)">Prioritário</button>
+    <button class="btn" onclick="gerarSenha()"><b>Criar senha</b></button>
 
+    <div id="resultado">
+        <h2 id="msg"></h2>
+        <h1 id="senhaCodigo" style="font-size: 50px; color: #007bff;"></h1>
+        <p id="detalhes"></p>
+    </div>
 </div>
 
-<div id="resultado">
-    <h2 id="msg"></h2>
-    <h1 id="senhaCodigo" style="font-size: 60px; color: #007bff;"></h1>
-    <p id="detalhes"></p>
-</div>
+</body>
+</html>
 
 <script>
-    async function gerarSenha(prioritario) {
+    async function gerarSenha() {
 
         const servicoId = document.getElementById("servico").value;
-
-        const prioridadeId = prioritario ? 2 : 1;
+        const prioridadeId = document.getElementById("prioridades").value;
 
         const payload = {
             servicoId: servicoId,
