@@ -40,7 +40,7 @@ public class Senha {
     @JoinColumn(name = "servico_id")
     private Servico servico;
 //  Cardinalidade Senha:Prioridade(1:1)
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "prioridade_id")
     private Prioridade prioridade;
 }

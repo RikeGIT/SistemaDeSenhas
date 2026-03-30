@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Selecionar Guichê - Sistema de Senhas</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 25px; }
+        select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #ddd; font-size: 16px; box-sizing: border-box; }
+        select { background-color: #fff; cursor: pointer; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .user-tag { background: #e7f3ff; color: #007bff; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="user-tag" id="nomeExibicao">Carregando...</div>
+    <h2>Escolha seu posto</h2>
+    <p>Selecione o guichê que você irá operar agora:</p>
+
+    <select id="selectGuiche">
+        <option value="">Aguardando guichês...</option>
+    </select>
+
+    <button onclick="confirmarSelecao()">INICIAR ATENDIMENTO</button>
+</div>
+
+<script>
+    // Recupera o atendente logado
+    const atendente = JSON.parse(localStorage.getItem('atendente'));
+
+    window.onload = async () => {
+        // Redireciona se não houver login
+        if (!atendente) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        document.getElementById('nomeExibicao').innerText = `Olá, ${atendente.nome}`;
+        await carregarGuiches();
+    };
+
+    async function carregarGuiches() {
+        try {
+            const response = await fetch('/guiche'); //
+            const guiches = await response.json();
+            const select = document.getElementById('selectGuiche');
+            select.innerHTML = '<option value="">Selecione um guichê</option>';
+
+            guiches.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.id;
+                // Exibe o número, setor e qual serviço o guichê atende
+                opt.innerText = `Guichê ${g.numero} - ${g.setor} (${g.servico.nome})`;
+                select.appendChild(opt);
+            });
+        } catch (error) {
+            alert("Erro ao carregar guichês.");
+        }
+    }
+
+    function confirmarSelecao() {
+        const guicheId = document.getElementById('selectGuiche').value;
+
+        if (!guicheId) {
+            alert("Por favor, selecione um guichê antes de prosseguir.");
+            return;
+        }
+
+        // Salva o guichê escolhido na sessão do navegador
+        localStorage.setItem('guicheId', guicheId);
+        window.location.href = "/atendente.html"; //
+    }
+</script>
+</body>
+</html>

@@ -21,7 +21,12 @@ public class Guiche {
     private Integer numero;
     private String setor;
     private boolean ocupado;
+
     @ManyToOne
     @JoinColumn(name = "servico_id")
     private Servico servico;
+
+    @ManyToOne
+    @JoinColumn(name = "atendente_id")
+    private Atendente atendenteAtual;
 }

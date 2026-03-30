@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Administrativo - Sistema de Senhas</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 0; margin: 0; }
+        nav { background-color: #343a40; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h2 { border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        input, select, button { padding: 10px; margin: 5px 5px; border-radius: 4px; border: 1px solid #ccc; }
+        button { cursor: pointer; border: none; font-weight: bold; transition: 0.3s; }
+        .btn-add { background-color: #28a745; color: white; }
+        .btn-add:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .btn-del { background-color: #dc3545; color: white; }
+        .btn-logout { background-color: #bd2130; color: white; padding: 8px 15px; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h1>Gestão Administrativa</h1>
+    <div class="user-info">
+        <span>Bem-vindo, <strong id="nomeAdmin"></strong></span>
+        <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="section">
+        <h2>Serviços</h2>
+        <div id="form-servico">
+            <input type="text" id="serv-nome" placeholder="Nome (Ex: Caixa)" required>
+            <input type="text" id="serv-sigla" placeholder="Sigla (Ex: CX)" required>
+            <input type="text" id="serv-desc" placeholder="Descrição" required>
+            <button class="btn-add" id="btn-servico" onclick="salvarServico()">Adicionar Serviço</button>
+        </div>
+        <table id="tabela-servicos">
+            <thead>
+            <tr><th>ID</th><th>Nome</th><th>Sigla</th><th>Ações</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Prioridades</h2>
+        <div id="form-prioridade">
+            <input type="text" id="prio-nome" placeholder="Nome (Ex: Idoso)" required>
+            <input type="number" id="prio-peso" placeholder="Peso (Ex: 10)" required>
+            <button class="btn-add" id="btn-prioridade" onclick="salvarPrioridade()">Adicionar Prioridade</button>
+        </div>
+        <table id="tabela-prioridades">
+            <thead>
+            <tr><th>ID</th><th>Nome</th><th>Peso</th><th>Ações</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Gestão de Atendentes</h2>
+        <table id="tabela-atendentes">
+            <thead>
+            <tr><th>ID</th><th>Nome</th><th>Usuário</th><th>Cargo</th><th>Ações</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Guichês</h2>
+        <div id="form-guiche">
+            <input type="number" id="gui-numero" placeholder="Número do Guichê" required>
+            <input type="text" id="gui-setor" placeholder="Setor (Ex: Térreo)" required>
+            <select id="gui-servico" required>
+                <option value="">Selecione o Serviço do Guichê</option>
+            </select>
+            <button class="btn-add" onclick="salvarGuiche()">Adicionar Guichê</button>
+        </div>
+        <table id="tabela-guiches">
+            <thead>
+            <tr><th>Número</th><th>Setor</th><th>Serviço</th><th>Ações</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem('atendente'));
+
+    window.onload = () => {
+        if (!user || !user.admin) {
+            alert("Acesso negado!");
+            window.location.href = "/login.html";
+            return;
+        }
+        document.getElementById('nomeAdmin').innerText = user.nome;
+        carregarTudo();
+    };
+
+    function logout() {
+        localStorage.removeItem('atendente');
+        window.location.href = "/login.html";
+    }
+
+    async function carregarTudo() {
+        carregarTabela('/servicos', 'tabela-servicos');
+        carregarTabela('/prioridades', 'tabela-prioridades');
+        carregarAtendentes();
+        carregarGuiches();
+        popularSelectServicos();
+    }
+
+    async function popularSelectServicos() {
+        const resp = await fetch('/servicos');
+        const servicos = await resp.json();
+        const select = document.getElementById('gui-servico');
+        select.innerHTML = '<option value="">Selecione o Serviço</option>';
+        servicos.forEach(s => {
+            select.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
+        });
+    }
+
+    async function carregarGuiches() {
+        const resp = await fetch('/guiche');
+        const dados = await resp.json();
+        const tbody = document.querySelector('#tabela-guiches tbody');
+        tbody.innerHTML = "";
+        dados.forEach(g => {
+            tbody.innerHTML += `<tr>
+                <td>${g.numero}</td>
+                <td>${g.setor}</td>
+                <td>${g.servico.nome}</td>
+                <td><button class="btn-del" onclick="deletar('/guiche', ${g.id})">Remover</button></td>
+            </tr>`;
+        });
+    }
+
+    async function salvarGuiche() {
+        if (!validarForm(['gui-numero', 'gui-setor', 'gui-servico'])) return;
+
+        const payload = {
+            numero: document.getElementById('gui-numero').value,
+            setor: document.getElementById('gui-setor').value,
+            servico: { id: document.getElementById('gui-servico').value } // Envia o objeto Servico esperado pelo Hibernate
+        };
+
+        await fetch('/guiche', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        carregarTudo(); // Atualiza todas as tabelas e limpa os campos
+    }
+
+    // Validação Simples: Verifica se os campos estão vazios
+    function validarCampos(ids) {
+        for (let id of ids) {
+            if (!document.getElementById(id).value.trim()) {
+                alert("Por favor, preencha todos os campos desta seção.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    async function salvarServico() {
+        if (!validarCampos(['serv-nome', 'serv-sigla', 'serv-desc'])) return;
+
+        const payload = {
+            nome: document.getElementById('serv-nome').value,
+            sigla: document.getElementById('serv-sigla').value,
+            descricao: document.getElementById('serv-desc').value
+        };
+        await enviarPost('/servicos', payload);
+    }
+
+    async function salvarPrioridade() {
+        if (!validarCampos(['prio-nome', 'prio-peso'])) return;
+
+        const payload = {
+            nome: document.getElementById('prio-nome').value,
+            peso: parseInt(document.getElementById('prio-peso').value)
+        };
+        await enviarPost('/prioridades', payload);
+    }
+
+    // ... Restante das funções (carregarTabela, carregarAtendentes, enviarPost, deletar, promover, eliminarAtendente) iguais ao código anterior
+
+    async function carregarTabela(url, tabelaId) {
+        const response = await fetch(url);
+        if (!response.ok) return; // Evita erros se a tabela estiver vazia
+
+        const dados = await response.json();
+        const tbody = document.querySelector(`#${tabelaId} tbody`);
+        tbody.innerHTML = "";
+
+        dados.forEach(item => {
+            const row = `<tr>
+                <td>${item.id}</td>
+                <td>${item.nome}</td>
+                <td>${item.sigla || item.peso}</td>
+                <td><button class="btn-del" onclick="deletar('${url}', ${item.id})">Remover</button></td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    async function enviarPost(url, payload) {
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        carregarTudo();
+        document.querySelectorAll('.section input').forEach(i => i.value = "");
+    }
+
+    async function deletar(url, id) {
+        if(confirm("Deseja realmente excluir este item?")) {
+            await fetch(`${url}/${id}`, { method: 'DELETE' });
+            carregarTudo();
+        }
+    }
+
+    async function carregarAtendentes() {
+        const response = await fetch('/auth/listar');
+        const atendentes = await response.json();
+        const tbody = document.querySelector('#tabela-atendentes tbody');
+        tbody.innerHTML = "";
+        atendentes.forEach(a => {
+            const cargo = a.admin ? "<strong>Admin</strong>" : "Atendente";
+            const botaoAdmin = a.admin ? "" : `<button class="btn-add" onclick="promover(${a.id})">Promover a Admin</button>`;
+            const row = `<tr>
+                <td>${a.id}</td>
+                <td>${a.nome}</td>
+                <td>${a.username}</td>
+                <td>${cargo}</td>
+                <td>
+                    ${botaoAdmin}
+                    <button class="btn-del" onclick="eliminarAtendente(${a.id})">Remover</button>
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    async function promover(id) {
+        if(confirm("Deseja dar permissões de administrador a este utilizador?")) {
+            await fetch(`/auth/${id}/tornar-admin`, { method: 'PUT' });
+            carregarAtendentes();
+        }
+    }
+
+    async function eliminarAtendente(id) {
+        if(confirm("Remover este atendente do sistema?")) {
+            await fetch(`/auth/${id}`, { method: 'DELETE' });
+            carregarAtendentes();
+        }
+    }
+</script>
+</body>
+</html>

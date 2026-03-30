@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Sistema de Senhas</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 4px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Acesso Restrito</h2>
+    <input type="text" id="username" placeholder="Usuário">
+    <input type="password" id="password" placeholder="Senha">
+    <button onclick="fazerLogin()">ENTRAR</button>
+    <div style="text-align: center; margin-top: 10px;">
+        <a href="/registro.html" style="font-size: 14px;">Criar nova conta</a>
+    </div>
+</div>
+
+<script>
+    async function fazerLogin() {
+        const credenciais = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        };
+
+        const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credenciais)
+        });
+
+        if (response.ok) {
+            const atendente = await response.json();
+            // Salvamos o atendente no navegador para saber quem está logado
+            localStorage.setItem('atendente', JSON.stringify(atendente));
+
+            // Se for admin, pode ir para a tela de gestão, senão vai para os guichês
+            if (atendente.admin) {
+                window.location.href = "/admin.html";
+            } else {
+                window.location.href = "/selecionar-guiche.html";
+            }
+        } else {
+            alert("Usuário ou senha incorretos.");
+        }
+    }
+</script>
+</body>
+</html>
