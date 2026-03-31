@@ -144,12 +144,13 @@
     }
 
     async function salvarGuiche() {
-        if (!validarForm(['gui-numero', 'gui-setor', 'gui-servico'])) return;
+    if (!validarForm(['gui-numero', 'gui-setor', 'gui-servico'])) return;
 
-        const payload = {
-            numero: document.getElementById('gui-numero').value,
-            setor: document.getElementById('gui-setor').value,
-            servico: { id: document.getElementById('gui-servico').value } // Envia o objeto Servico esperado pelo Hibernate
+    const payload = {
+        numero: parseInt(document.getElementById('gui-numero').value),
+        setor: document.getElementById('gui-setor').value,
+        servico: { id: parseInt(document.getElementById('gui-servico').value) },
+        ocupado: true
         };
 
         await fetch('/guiche', {
@@ -158,13 +159,19 @@
             body: JSON.stringify(payload)
         });
 
-        carregarTudo(); // Atualiza todas as tabelas e limpa os campos
+        // Adicione estas linhas para limpar o formulário após salvar
+        document.getElementById('gui-numero').value = "";
+        document.getElementById('gui-setor').value = "";
+        document.getElementById('gui-servico').value = "";
+
+        carregarTudo();
     }
 
     // Validação Simples: Verifica se os campos estão vazios
-    function validarCampos(ids) {
+    function validarForm(ids) {
         for (let id of ids) {
-            if (!document.getElementById(id).value.trim()) {
+            const elemento = document.getElementById(id);
+            if (!elemento || !elemento.value.trim()) {
                 alert("Por favor, preencha todos os campos desta seção.");
                 return false;
             }
@@ -173,7 +180,7 @@
     }
 
     async function salvarServico() {
-        if (!validarCampos(['serv-nome', 'serv-sigla', 'serv-desc'])) return;
+        if (!validarForm(['serv-nome', 'serv-sigla', 'serv-desc'])) return;
 
         const payload = {
             nome: document.getElementById('serv-nome').value,
@@ -184,7 +191,7 @@
     }
 
     async function salvarPrioridade() {
-        if (!validarCampos(['prio-nome', 'prio-peso'])) return;
+        if (!validarForm(['prio-nome', 'prio-peso'])) return;
 
         const payload = {
             nome: document.getElementById('prio-nome').value,
