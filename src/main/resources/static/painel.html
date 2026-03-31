@@ -84,14 +84,9 @@
 
 </div>
 
-<!-- áudio da chamada -->
-<audio id="somChamada" src="/audio/chamada.mp3"></audio>
-
 <script>
 
     let historico = [];
-
-    let ultimaSenha = null;
 
     async function atualizarPainel(){
 
@@ -117,16 +112,8 @@
 
                 senhaAtualDiv.innerText = senhaAtual;
 
-                if(senhaAtual !== ultimaSenha){
-
-                    document.getElementById("somChamada").play();
-
-                    ultimaSenha = senhaAtual;
-
-                    if(!historico.includes(senhaAtual)){
-                        historico.unshift(senhaAtual);
-                    }
-
+                if(!historico.includes(senhaAtual)){
+                    historico.unshift(senhaAtual);
                 }
 
             }
