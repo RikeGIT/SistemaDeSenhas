@@ -7,28 +7,55 @@
     <style>
 
         body{
-            font-family: Arial, sans-serif;
-            background-color:#f4f4f9;
-            color:#333;
+            font-family: Arial, Helvetica, sans-serif;
+            background:#f4f6f9;
+            margin:0;
             text-align:center;
         }
 
         h1{
+            margin-top:30px;
             font-size:50px;
+            color:#1a237e;
+        }
+
+        h2{
+            font-size:28px;
+            color:#333;
+        }
+
+        #senhaAtualBox{
+            margin-top:30px;
+        }
+
+        #senhaAtual{
+            font-size:90px;
+            font-weight:bold;
+            background:white;
+            color:#1a237e;
+            padding:40px 80px;
+            border-radius:12px;
+            display:inline-block;
+            box-shadow:0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #historico{
+            margin-top:50px;
         }
 
         #lista{
-            margin-top:40px;
+            margin-top:20px;
         }
 
         .item{
-            font-size:40px;
-            margin:20px auto;
-            padding:20px;
-            background:#e3f2fd;
+            font-size:30px;
+            margin:10px auto;
+            padding:15px;
+            background:white;
             border-radius:10px;
-            max-width:400px;
-            border:2px solid #2196f3;
+            max-width:300px;
+            box-shadow:0 3px 8px rgba(0,0,0,0.08);
+            color:#333;
         }
 
     </style>
@@ -39,50 +66,87 @@
 
 <h1>Painel de Atendimento</h1>
 
-<h2>Senhas em Atendimento</h2>
+<div id="senhaAtualBox">
 
-<div id="lista"></div>
+    <h2>Senha Atual</h2>
+
+    <div id="senhaAtual">
+        ---
+    </div>
+
+</div>
+
+<div id="historico">
+
+    <h2>Últimas Senhas Chamadas</h2>
+
+    <div id="lista"></div>
+
+</div>
 
 <script>
+
+    let historico = [];
 
     async function atualizarPainel(){
 
         try{
 
-            const response = await fetch("/senha")
-            const senhas = await response.json()
+            const response = await fetch("/senha");
+            const senhas = await response.json();
 
-            const lista = document.getElementById("lista")
+            const senhaAtualDiv = document.getElementById("senhaAtual");
+            const lista = document.getElementById("lista");
 
-            lista.innerHTML = ""
+            let senhaAtual = null;
 
-            senhas.forEach(senha => {
+            senhas.forEach(function(senha){
 
                 if(senha.status === "CHAMADA"){
-
-                    const div = document.createElement("div")
-
-                    div.className = "item"
-
-                    div.innerText = "Senha " + senha["codigo"]
-
-                    lista.appendChild(div)
-
+                    senhaAtual = senha.codigo;
                 }
 
-            })
+            });
+
+            if(senhaAtual){
+
+                senhaAtualDiv.innerText = senhaAtual;
+
+                if(!historico.includes(senhaAtual)){
+                    historico.unshift(senhaAtual);
+                }
+
+            }
+
+            if(historico.length > 5){
+                historico.pop();
+            }
+
+            lista.innerHTML = "";
+
+            historico.forEach(function(s){
+
+                const div = document.createElement("div");
+
+                div.className = "item";
+
+                div.innerText = "Senha " + s;
+
+                lista.appendChild(div);
+
+            });
 
         }catch(error){
 
-            console.log("Erro ao atualizar painel")
+            console.log("Erro ao atualizar painel");
 
         }
 
     }
 
-    setInterval(atualizarPainel,2000)
+    setInterval(atualizarPainel,2000);
 
-    atualizarPainel()
+    atualizarPainel();
 
 </script>
 
