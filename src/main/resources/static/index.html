@@ -3,248 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <title>Totem de Senhas</title>
-
     <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 800px; text-align: center; }
+        h1 { color: #333; margin-bottom: 30px; }
+        .section { margin-bottom: 30px; padding: 20px; border-radius: 10px; background: #fff; border: 1px solid #eee; }
+        .grid-botoes { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px; }
 
-        body{
-            font-family: Arial, sans-serif;
-            background:#f4f6f8;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            margin:0;
+        /* Estilo dos Botões Dinâmicos */
+        .btn-opcao {
+            padding: 20px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 10px;
+            min-width: 180px;
+            transition: 0.3s;
         }
+        .btn-opcao:hover { background: #e7f1ff; }
+        .btn-opcao.selecionado { background: #007bff; color: white; }
 
-        .container{
-            background:white;
-            padding:30px;
-            border-radius:12px;
-            box-shadow:0 4px 15px rgba(0,0,0,0.1);
-            width:750px;
-            text-align:center;
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            border: 3px dashed #28a745;
+            border-radius: 15px;
+            display: none;
+            background: #f8fff9;
         }
-
-        h1{
-            margin-bottom:20px;
-        }
-
-        .section{
-            margin-bottom:20px;
-        }
-
-        .section h2{
-            margin-bottom:10px;
-        }
-
-        .buttons{
-            display:flex;
-            justify-content:center;
-            gap:12px;
-            flex-wrap:nowrap;
-        }
-
-        .btn-opcao{
-            padding:12px 18px;
-            font-size:16px;
-            border-radius:8px;
-            border:2px solid #007bff;
-            background:white;
-            cursor:pointer;
-            transition:0.2s;
-            min-width:110px;
-        }
-
-        .btn-opcao:hover{
-            background:#e7f1ff;
-        }
-
-        .selecionado{
-            background:#007bff;
-            color:white;
-        }
-
-        .escolha{
-            margin-top:8px;
-            font-size:18px;
-            font-weight:bold;
-            color:#007bff;
-        }
-
-        .btn-gerar{
-            margin-top:20px;
-            padding:16px;
-            width:100%;
-            font-size:22px;
-            border-radius:10px;
-            border:none;
-            background:#28a745;
-            color:white;
-            cursor:pointer;
-        }
-
-        .btn-gerar:hover{
-            background:#1e7e34;
-        }
-
-        #resultado{
-            margin-top:20px;
-            padding:15px;
-            border:2px dashed #007bff;
-            border-radius:10px;
-            display:none;
-        }
-
-        #senhaCodigo{
-            font-size:50px;
-            color:#007bff;
-        }
-
+        #senhaCodigo { font-size: 70px; color: #28a745; margin: 10px 0; font-weight: bold; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
     </style>
 </head>
-
 <body>
 
-<div class="container">
-
-    <h1>Retirar Senha</h1>
-
-    <div class="section">
-
-        <h2>Escolha o Serviço</h2>
-
-        <div class="buttons">
-
-            <button class="btn-opcao" onclick="selecionarServico(1,'Caixa',this)">Caixa</button>
-
-            <button class="btn-opcao" onclick="selecionarServico(2,'Gerência',this)">Gerência</button>
-
-            <button class="btn-opcao" onclick="selecionarServico(3,'Suporte',this)">Suporte</button>
-
-        </div>
-
-        <div class="escolha" id="servicoEscolhido">
-            Nenhum serviço selecionado
-        </div>
-
-    </div>
-
+<div class="container" id="totem-interface">
+    <h1>Autoatendimento</h1>
 
     <div class="section">
-
-        <h2>Tipo de Atendimento</h2>
-
-        <div class="buttons">
-
-            <button class="btn-opcao" onclick="selecionarPrioridade(1,'Normal',this)">Normal</button>
-
-            <button class="btn-opcao" onclick="selecionarPrioridade(2,'Gestante/Autista',this)">Gestante/Autista</button>
-
-            <button class="btn-opcao" onclick="selecionarPrioridade(3,'Idoso 60+',this)">Idoso 60+</button>
-
-            <button class="btn-opcao" onclick="selecionarPrioridade(4,'Idoso 80+',this)">Idoso 80+</button>
-
-            <button class="btn-opcao" onclick="selecionarPrioridade(5,'Outro',this)">Outro</button>
-
+        <h2>1. Selecione o Serviço</h2>
+        <div id="container-servicos" class="grid-botoes">
         </div>
-
-        <div class="escolha" id="prioridadeEscolhida">
-            Nenhuma prioridade selecionada
-        </div>
-
     </div>
 
-    <button class="btn-gerar" onclick="gerarSenha()">
-        GERAR SENHA
-    </button>
+    <div class="section" id="secao-prioridades" style="display: none;">
+        <h2>2. Selecione a Prioridade</h2>
+        <div id="container-prioridades" class="grid-botoes">
+        </div>
+    </div>
 
     <div id="resultado">
-
-        <h2 id="msg"></h2>
-
-        <h1 id="senhaCodigo"></h1>
-
-        <p id="detalhes"></p>
-
+        <h2>Sua Senha:</h2>
+        <div id="senhaCodigo"></div>
+        <p id="detalhesSenha"></p>
+        <p>Aguarde ser chamado no painel.</p>
+        <button onclick="location.reload()" style="padding: 10px 20px; cursor: pointer;">Retirar outra senha</button>
     </div>
-
 </div>
 
 <script>
+    let servicoSelecionadoId = null;
 
-    let servicoId = null;
-    let prioridadeId = null;
+    window.onload = () => {
+        carregarServicos();
+    };
 
-    function selecionarServico(id,nome,botao){
+    // 1. Busca Serviços no Banco
+    async function carregarServicos() {
+        const resp = await fetch('/servicos');
+        const servicos = await resp.json();
+        const container = document.getElementById('container-servicos');
 
-        servicoId = id;
-
-        document.querySelectorAll(".section")[0]
-            .querySelectorAll(".btn-opcao")
-            .forEach(btn => btn.classList.remove("selecionado"));
-
-        botao.classList.add("selecionado");
-
-        document.getElementById("servicoEscolhido")
-            .innerText = "Serviço escolhido: " + nome;
-
+        servicos.forEach(s => {
+            const btn = document.createElement('button');
+            btn.className = "btn-opcao";
+            btn.innerText = s.nome;
+            btn.onclick = () => selecionarServico(s.id, btn);
+            container.appendChild(btn);
+        });
     }
 
-    function selecionarPrioridade(id,nome,botao){
+    // 2. Lógica ao clicar no serviço
+    function selecionarServico(id, botao) {
+        servicoSelecionadoId = id;
 
-        prioridadeId = id;
-
-        document.querySelectorAll(".section")[1]
-            .querySelectorAll(".btn-opcao")
-            .forEach(btn => btn.classList.remove("selecionado"));
-
+        // Visual: Marcar botão selecionado
+        document.querySelectorAll("#container-servicos .btn-opcao").forEach(b => b.classList.remove("selecionado"));
         botao.classList.add("selecionado");
 
-        document.getElementById("prioridadeEscolhida")
-            .innerText = "Tipo de atendimento: " + nome;
-
+        // Carregar prioridades e mostrar seção
+        carregarPrioridades();
+        document.getElementById('secao-prioridades').style.display = 'block';
     }
 
-    async function gerarSenha(){
+    // 3. Busca Prioridades no Banco
+    async function carregarPrioridades() {
+        const resp = await fetch('/prioridades');
+        const prioridades = await resp.json();
+        const container = document.getElementById('container-prioridades');
+        container.innerHTML = ""; // Limpa para não duplicar
 
-        if(servicoId == null || prioridadeId == null){
+        prioridades.forEach(p => {
+            const btn = document.createElement('button');
+            btn.className = "btn-opcao";
+            btn.innerHTML = `${p.nome}`;
+            btn.onclick = () => gerarSenhaFinal(p.id);
+            container.appendChild(btn);
+        });
+    }
 
-            alert("Por favor escolha o serviço e o tipo de atendimento.");
-            return;
-
-        }
-
+    // 4. Envia para o Backend e mostra o resultado
+    async function gerarSenhaFinal(prioridadeId) {
         const payload = {
-            servicoId: servicoId,
+            servicoId: servicoSelecionadoId,
             prioridadeId: prioridadeId
         };
 
-        try{
-
-            const response = await fetch('/senha',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify(payload)
+        try {
+            const resp = await fetch('/senha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
 
-            const data = await response.json();
-
-            document.getElementById("resultado").style.display="block";
-
-            document.getElementById("msg").innerText = data.mensagem || "Senha gerada";
-
-            document.getElementById("senhaCodigo").innerText = data.codigo || "Erro";
-
-            document.getElementById("detalhes").innerText = "Serviço: " + (data.servico || "");
-
-        }catch(error){
-
-            alert("Erro ao gerar senha. Verifique o servidor.");
-
+            if (resp.ok) {
+                const senha = await resp.json();
+                exibirResultado(senha);
+            }
+        } catch (error) {
+            alert("Erro ao conectar com o servidor.");
         }
-
     }
 
+    function exibirResultado(senha) {
+        // Esconde as seleções e mostra a senha grande
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        document.getElementById('resultado').style.display = 'block';
+        document.getElementById('senhaCodigo').innerText = senha.codigo;
+        document.getElementById('detalhesSenha').innerText = `Serviço: ${senha.servico}`;
+
+        // Auto-reset após 10 segundos para o próximo cliente
+        setTimeout(() => location.reload(), 10000);
+    }
 </script>
 
 </body>
