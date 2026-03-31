@@ -1,5 +1,6 @@
 package duck.com.example.SistemaDeSenhas.controller;
 import duck.com.example.SistemaDeSenhas.entity.Servico;
+import duck.com.example.SistemaDeSenhas.repository.AtendimentoRepository;
 import duck.com.example.SistemaDeSenhas.repository.GuicheRepository;
 import duck.com.example.SistemaDeSenhas.repository.SenhaRepository;
 import duck.com.example.SistemaDeSenhas.repository.ServicoRepository;
@@ -15,6 +16,9 @@ import java.util.List;
 public class ServicoController {
     @Autowired
     private SenhaRepository senhaRepository;
+
+    @Autowired
+    private AtendimentoRepository atendimentoRepository;
 
     @Autowired
     private GuicheRepository guicheRepository;
@@ -47,11 +51,14 @@ public class ServicoController {
         long totalSenhas = senhaRepository.countByServicoId(id);
         long totalGuiches = guicheRepository.countByServicoId(id);
 
-        if ((totalSenhas > 0 || totalGuiches > 0) && !confirmado) {
+        long totalAtendimentos = atendimentoRepository.countByGuicheServicoId(id);
+
+        if ((totalSenhas > 0 || totalGuiches > 0 || totalAtendimentos > 0) && !confirmado) {
             String msg = "Atenção: Este serviço possui ";
-            if (totalSenhas > 0) msg += totalSenhas + " senhas ";
-            if (totalGuiches > 0) msg += (totalSenhas > 0 ? "e " : "") + totalGuiches + " guichês ";
-            msg += "vinculados. Confirmar exclusão total?";
+            if (totalSenhas > 0) msg += totalSenhas + " senhas pendentes, ";
+            if (totalGuiches > 0) msg += totalGuiches + " guichês cadastrados ";
+            if (totalAtendimentos > 0) msg += "e " + totalAtendimentos + " atendimentos realizados. ";
+            msg += "Deseja excluir TUDO permanentemente?";
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
         }

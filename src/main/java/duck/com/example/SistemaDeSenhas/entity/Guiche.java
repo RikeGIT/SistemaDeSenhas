@@ -1,10 +1,13 @@
 package duck.com.example.SistemaDeSenhas.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "guiches")
@@ -29,4 +32,8 @@ public class Guiche {
     @ManyToOne
     @JoinColumn(name = "atendente_id")
     private Atendente atendenteAtual;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "guiche", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Atendimento> atendimentos;
 }

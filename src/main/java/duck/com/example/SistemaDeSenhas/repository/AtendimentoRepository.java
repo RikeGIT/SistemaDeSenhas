@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> {
     Optional<Atendimento> findByGuicheIdAndDataHoraFimIsNull(Long guicheId);
+    long countByGuicheServicoId(Long servicoId);
 }
