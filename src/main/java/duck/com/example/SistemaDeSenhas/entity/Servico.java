@@ -1,10 +1,13 @@
 package duck.com.example.SistemaDeSenhas.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "servicos")
@@ -23,4 +26,12 @@ public class Servico {
     private String nome;
     private String descricao;
     private String sigla;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "servico", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Senha> senhas;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "servico", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Guiche> guiches;
 }

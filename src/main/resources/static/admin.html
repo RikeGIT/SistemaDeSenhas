@@ -231,10 +231,24 @@
         document.querySelectorAll('.section input').forEach(i => i.value = "");
     }
 
-    async function deletar(url, id) {
-        if(confirm("Deseja realmente excluir este item?")) {
-            await fetch(`${url}/${id}`, { method: 'DELETE' });
-            carregarTudo();
+    async function deletar(url, id, confirmado = false) {
+        const endpoint = confirmado ? `${url}/${id}?confirmado=true` : `${url}/${id}`;
+        try {
+            const response = await fetch(endpoint, { method: 'DELETE' });
+
+            if (response.status === 409) { // Conflito de integridade
+                const mensagem = await response.text();
+                if (confirm(mensagem)) {
+                    // Tenta novamente passando a confirmação
+                    await deletar(url, id, true);
+                }
+            } else if (response.ok) {
+                carregarTudo(); // Atualiza as tabelas
+            } else {
+                alert("Erro ao excluir. Verifique o console do servidor.");
+            }
+        } catch (error) {
+            console.error("Erro:", error);
         }
     }
 

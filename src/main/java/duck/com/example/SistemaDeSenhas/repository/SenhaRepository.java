@@ -12,4 +12,8 @@ public interface SenhaRepository extends JpaRepository<Senha, Long> {
             "WHERE s.status = 'AGUARDANDO' AND s.servico = :servico " +
             "ORDER BY s.prioridade.peso DESC, s.dataHoraGeracao ASC")
     List<Senha> encontrarProximaSenha(Servico servico);
+
+    // Counts para poder realizar um DELETE em cascade.
+    long countByPrioridadeId(Long prioridadeId);
+    long countByServicoId(Long servicoId);
 }
