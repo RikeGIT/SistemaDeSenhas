@@ -5,10 +5,21 @@
     <title>Totem de Senhas</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 800px; text-align: center; }
+
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+
         h1 { color: #333; margin-bottom: 30px; }
+
         .section { margin-bottom: 30px; padding: 20px; border-radius: 10px; background: #fff; border: 1px solid #eee; }
-        .grid-botoes { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px; }
+
+        /* BOTÕES AGORA EM COLUNA */
+        .grid-botoes {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
 
         /* Estilo dos Botões Dinâmicos */
         .btn-opcao {
@@ -20,11 +31,32 @@
             background: white;
             color: #007bff;
             border-radius: 10px;
-            min-width: 180px;
+            width: 250px;
             transition: 0.3s;
         }
+
         .btn-opcao:hover { background: #e7f1ff; }
+
         .btn-opcao.selecionado { background: #007bff; color: white; }
+
+        .btn-voltar {
+            margin-top: 25px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            background: #dc3545;
+            color: white;
+            border-radius: 10px;
+            width: 200px;
+            transition: 0.3s;
+        }
+
+        .btn-voltar:hover {
+            background: #b02a37;
+            transform: scale(1.05);
+        }
 
         #resultado {
             margin-top: 30px;
@@ -34,8 +66,11 @@
             display: none;
             background: #f8fff9;
         }
+
         #senhaCodigo { font-size: 70px; color: #28a745; margin: 10px 0; font-weight: bold; }
+
         hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+
     </style>
 </head>
 <body>
@@ -43,8 +78,8 @@
 <div class="container" id="totem-interface">
     <h1>Autoatendimento</h1>
 
-    <div class="section">
-        <h2>1. Selecione o Serviço</h2>
+    <div class="section" id="secao-servicos">
+        <h2>1. Selecione uma Opção</h2>
         <div id="container-servicos" class="grid-botoes">
         </div>
     </div>
@@ -53,6 +88,8 @@
         <h2>2. Selecione a Prioridade</h2>
         <div id="container-prioridades" class="grid-botoes">
         </div>
+
+        <button class="btn-voltar" onclick="voltarParaServicos()">← Voltar</button>
     </div>
 
     <div id="resultado">
@@ -94,6 +131,9 @@
         document.querySelectorAll("#container-servicos .btn-opcao").forEach(b => b.classList.remove("selecionado"));
         botao.classList.add("selecionado");
 
+        // Esconde serviços e mostra prioridades
+        document.getElementById('secao-servicos').style.display = 'none';
+
         // Carregar prioridades e mostrar seção
         carregarPrioridades();
         document.getElementById('secao-prioridades').style.display = 'block';
@@ -113,6 +153,11 @@
             btn.onclick = () => gerarSenhaFinal(p.id);
             container.appendChild(btn);
         });
+    }
+
+    function voltarParaServicos(){
+        document.getElementById('secao-prioridades').style.display = 'none';
+        document.getElementById('secao-servicos').style.display = 'block';
     }
 
     // 4. Envia para o Backend e mostra o resultado
