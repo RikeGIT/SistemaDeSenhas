@@ -52,6 +52,10 @@ INSERT INTO guiches (numero, setor, ocupado, servico_id) VALUES
 (2, 'Térreo', false, 1), -- Guichê 2 atende Caixa
 (3, 'Mezanino', false, 2), -- Guichê 3 atende Gerência
 (4, 'Térreo', false, 3); -- Guichê 4 atende Suporte
+
+INSERT INTO atendentes (nome, username, password, admin) VALUES
+('Administrador do Sistema', 'admin', '0000', true)
+
 ```
 
 ---
