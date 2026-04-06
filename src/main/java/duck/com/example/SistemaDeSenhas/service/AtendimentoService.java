@@ -19,37 +19,55 @@ public class AtendimentoService {
 
     @Autowired
     private SenhaRepository senhaRepository;
+
     @Autowired
     private GuicheRepository guicheRepository;
+
     @Autowired
     private AtendimentoRepository atendimentoRepository;
 
     @Transactional
     public Atendimento chamarProxima(Long guicheId) {
-        // 1. Verificar se o guichê existe e o serviço que ele presta
+
         Guiche guiche = guicheRepository.findById(guicheId)
                 .orElseThrow(() -> new RuntimeException("Guichê não encontrado"));
 
-        if (guiche.isOcupado()) {
-            throw new RuntimeException("Este guichê já está em atendimento");
+        // verifica se existe atendimento em aberto
+        Atendimento atual = atendimentoRepository
+                .findByGuicheIdAndDataHoraFimIsNull(guicheId)
+                .orElse(null);
+
+        if (atual != null) {
+
+            atual.setDataHoraFim(LocalDateTime.now());
+
+            Senha senhaAtual = atual.getSenha();
+
+            // ALTERAÇÃO IMPORTANTE
+            senhaAtual.setStatus(StatusSenha.FINALIZADA);
+            senhaRepository.save(senhaAtual);
+
+            atendimentoRepository.save(atual);
+
+            guiche.setOcupado(false);
+            guicheRepository.save(guiche);
         }
 
-        // 2. Buscar a próxima senha da fila para aquele serviço
         List<Senha> fila = senhaRepository.encontrarProximaSenha(guiche.getServico());
+
         if (fila.isEmpty()) {
-            return null; // Caso a fila esteja vazia
+            return null;
         }
 
         Senha proximaSenha = fila.get(0);
 
-        // 3. Atualizar estados
         proximaSenha.setStatus(StatusSenha.CHAMADA);
+
         guiche.setOcupado(true);
 
         senhaRepository.save(proximaSenha);
         guicheRepository.save(guiche);
 
-        // 4. Registrar o Início do Atendimento
         Atendimento atendimento = new Atendimento();
         atendimento.setSenha(proximaSenha);
         atendimento.setGuiche(guiche);
@@ -58,28 +76,10 @@ public class AtendimentoService {
         return atendimentoRepository.save(atendimento);
     }
 
-    @Transactional
-    public void finalizarAtendimento(Long atendimentoId) {
-        Atendimento atendimento = atendimentoRepository.findById(atendimentoId)
-                .orElseThrow(() -> new RuntimeException("Atendimento não encontrado"));
-
-        atendimento.setDataHoraFim(LocalDateTime.now());
-
-        Senha senha = atendimento.getSenha();
-        Guiche guiche = atendimento.getGuiche();
-
-        // Libera o guichê para o próximo
-        guiche.setOcupado(false);
-        guicheRepository.save(guiche);
-
-        // Exclui a senha do banco de dados
-        atendimento.setSenha(null);
-        atendimentoRepository.save(atendimento);
-        senhaRepository.delete(senha);
-    }
-
     public Atendimento buscarAtendimentoAtual(Long guicheId) {
-        return atendimentoRepository.findByGuicheIdAndDataHoraFimIsNull(guicheId)
+
+        return atendimentoRepository
+                .findByGuicheIdAndDataHoraFimIsNull(guicheId)
                 .orElse(null);
     }
 }
