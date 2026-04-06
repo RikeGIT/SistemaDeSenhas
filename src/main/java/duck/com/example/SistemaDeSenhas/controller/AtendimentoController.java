@@ -22,12 +22,6 @@ public class AtendimentoController {
         return ResponseEntity.ok(atendimento);
     }
 
-    @PutMapping("/finalizar/{id}")
-    public ResponseEntity<Void> finalizar(@PathVariable Long id) {
-        atendimentoService.finalizarAtendimento(id);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/atual/{guicheId}")
     public ResponseEntity<Atendimento> buscarAtual(@PathVariable Long guicheId) {
         Atendimento atendimento = atendimentoService.buscarAtendimentoAtual(guicheId);
