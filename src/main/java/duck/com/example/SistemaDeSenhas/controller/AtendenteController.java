@@ -44,4 +44,8 @@ public class AtendenteController {
             return ResponseEntity.ok(atendenteRepository.save(atendente));
         }).orElse(ResponseEntity.notFound().build());
     }
+    @DeleteMapping("/{id}")
+    public void deletar(@PathVariable Long id) {
+        atendenteRepository.deleteById(id);
+    }
 }
