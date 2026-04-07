@@ -65,6 +65,16 @@
 
     <div class="section">
         <h2>Gestão de Atendentes</h2>
+        <div id="form-atendente">
+            <input type="text" id="new-nome" placeholder="Nome Completo" required>
+            <input type="text" id="new-username" placeholder="Usuário" required>
+            <input type="password" id="new-password" placeholder="Senha" required>
+            <select id="new-admin">
+                <option value="false">Atendente Comum</option>
+                <option value="true">Administrador</option>
+            </select>
+            <button class="btn-add" onclick="cadastrarAtendente()">Cadastrar Funcionário</button>
+        </div>
         <table id="tabela-atendentes">
             <thead>
             <tr><th>ID</th><th>Nome</th><th>Usuário</th><th>Cargo</th><th>Ações</th></tr>
@@ -285,6 +295,31 @@
         if(confirm("Remover este atendente do sistema?")) {
             await fetch(`/auth/${id}`, { method: 'DELETE' });
             carregarAtendentes();
+        }
+    }
+    async function cadastrarAtendente() {
+        const payload = {
+            nome: document.getElementById('new-nome').value,
+            username: document.getElementById('new-username').value,
+            password: document.getElementById('new-password').value,
+            admin: document.getElementById('new-admin').value === "true"
+        };
+
+        const response = await fetch('/auth/registrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            alert("Novo atendente cadastrado com sucesso!");
+            // Limpa os campos
+            document.getElementById('new-nome').value = "";
+            document.getElementById('new-username').value = "";
+            document.getElementById('new-password').value = "";
+            carregarAtendentes(); // Atualiza a tabela abaixo
+        } else {
+            alert("Erro ao cadastrar. O usuário pode já existir.");
         }
     }
 </script>

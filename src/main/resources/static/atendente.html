@@ -9,6 +9,7 @@
         button { width: 100%; padding: 15px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
         .btn-chamar { background-color: #28a745; color: white; }
         .btn-chamar:hover { background-color: #218838; }
+        .btn-finalizar { background-color: #dc3545; color: white; }
         .btn-trocar { background-color: #6c757d; color: white; font-size: 14px; padding: 10px; }
         .info-atendimento { margin-top: 20px; padding: 15px; background: #e9ecef; border-left: 5px solid #007bff; display: none; }
         #infoGuiche { color: #555; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
@@ -25,6 +26,7 @@
         <h3>Atendimento em curso:</h3>
         <p><strong>Senha:</strong> <span id="senhaChamada" style="font-size: 24px; color: #007bff;"></span></p>
         <p id="detalhesAtendimento"></p>
+        <button class="btn-finalizar" onclick="finalizarAtendimento()">FINALIZAR ATENDIMENTO</button>
     </div>
 
     <button class="btn-trocar" onclick="trocarGuiche()">Trocar de Guichê</button>
@@ -72,6 +74,7 @@
 
             if (response.status === 204) {
                 alert("Não há senhas aguardando para este serviço.");
+                await finalizarAtendimento()
                 return;
             }
 
@@ -110,6 +113,18 @@
 
         document.getElementById('detalhesAtendimento').innerText =
             (retomado ? "Retomado - " : "") + `Iniciado em: ${hora}`;
+    }
+
+    async function finalizarAtendimento() {
+        if (!atendimentoAtivoId) return;
+        try {
+            await fetch(`/atendimentos/finalizar/${atendimentoAtivoId}`, { method: 'PUT' });
+            alert("Atendimento finalizado!");
+            document.getElementById('atendimentoAtual').style.display = 'none';
+            atendimentoAtivoId = null;
+        } catch (error) {
+            alert("Erro ao finalizar atendimento.");
+        }
     }
 </script>
 </body>
