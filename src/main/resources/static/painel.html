@@ -10,6 +10,18 @@
             font-family: Arial, Helvetica, sans-serif;
             background:#f4f6f9;
             margin:0;
+        }
+
+        /* Layout principal */
+
+        #layout{
+            display:flex;
+        }
+
+        /* Parte central */
+
+        #painelCentral{
+            flex:1;
             text-align:center;
         }
 
@@ -25,7 +37,7 @@
         }
 
         #senhaAtualBox{
-            margin-top:30px;
+            margin-top:60px;
         }
 
         #senhaAtual{
@@ -39,8 +51,18 @@
             box-shadow:0 4px 10px rgba(0,0,0,0.1);
         }
 
-        #historico{
-            margin-top:50px;
+        /* HISTÓRICO LATERAL */
+
+        #historicoLateral{
+            width:260px;
+            background:white;
+            border-left:3px solid #e0e0e0;
+            padding:20px;
+            height:100vh;
+        }
+
+        #historicoLateral h2{
+            text-align:center;
         }
 
         #lista{
@@ -48,14 +70,12 @@
         }
 
         .item{
-            font-size:30px;
-            margin:10px auto;
-            padding:15px;
-            background:white;
-            border-radius:10px;
-            max-width:300px;
-            box-shadow:0 3px 8px rgba(0,0,0,0.08);
-            color:#333;
+            font-size:26px;
+            margin:10px 0;
+            padding:12px;
+            background:#f5f5f5;
+            border-radius:8px;
+            text-align:center;
         }
 
     </style>
@@ -64,23 +84,36 @@
 
 <body>
 
-<h1>Painel de Atendimento</h1>
+<div id="layout">
 
-<div id="senhaAtualBox">
+    <!-- PAINEL CENTRAL -->
 
-    <h2>Senha Atual</h2>
+    <div id="painelCentral">
 
-    <div id="senhaAtual">
-        ---
+        <h1>Painel de Atendimento</h1>
+
+        <div id="senhaAtualBox">
+
+            <h2>Senha Atual</h2>
+
+            <div id="senhaAtual">
+                ---
+            </div>
+
+        </div>
+
     </div>
 
-</div>
 
-<div id="historico">
+    <!-- HISTÓRICO NO CANTO DA TELA -->
 
-    <h2>Últimas Senhas Chamadas</h2>
+    <div id="historicoLateral">
 
-    <div id="lista"></div>
+        <h2>Últimas Chamadas</h2>
+
+        <div id="lista"></div>
+
+    </div>
 
 </div>
 
@@ -118,7 +151,7 @@
 
             }
 
-            if(historico.length > 5){
+            if(historico.length > 10){
                 historico.pop();
             }
 
