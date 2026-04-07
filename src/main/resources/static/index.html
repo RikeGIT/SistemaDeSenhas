@@ -23,8 +23,8 @@
 
         /* Estilo dos Botões Dinâmicos */
         .btn-opcao {
-            padding: 20px 25px;
-            font-size: 1.1rem;
+            padding: 15px 20px;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             border: 2px solid #007bff;
@@ -71,6 +71,42 @@
 
         hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
 
+        @media print {
+            @page {
+                margin: 0;
+            }
+
+            body {
+                margin: 1cm;
+                background: white;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #resultado, #resultado * {
+                visibility: visible;
+            }
+
+            #resultado {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 95%;
+                border: none !important;
+                background: white !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+            }
+            #resultado button {
+                display: none !important;
+            }
+            h1 {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -92,12 +128,19 @@
         <button class="btn-voltar" onclick="voltarParaServicos()">← Voltar</button>
     </div>
 
-    <div id="resultado">
-        <h2>Sua Senha:</h2>
-        <div id="senhaCodigo"></div>
-        <p id="detalhesSenha"></p>
-        <p>Aguarde ser chamado no painel.</p>
-        <button onclick="location.reload()" style="padding: 10px 20px; cursor: pointer;">Retirar outra senha</button>
+    <div id="resultado" style="text-align: center;">
+        <h2 style="margin-bottom: 5px;">Sua Senha:</h2>
+        <div id="senhaCodigo" style="font-size: 80px; margin: 10px 0;"></div>
+        <p id="detalhesSenha" style="font-size: 20px; font-weight: bold;"></p>
+        <p style="margin-top: 10px;">Aguarde ser chamado no painel.</p>
+
+        <button onclick="imprimirSenha()" class="btn-opcao" style="background-color: #28a745; color: white; border: none; margin-top: 20px; margin-bottom: 20px;">
+            imprimir senha
+        </button>
+        <br>
+        <button onclick="location.reload()" style="background: none; border: 1px solid #ccc; padding: 5px 10px; cursor: pointer;">
+            Retirar outra senha
+        </button>
     </div>
 </div>
 
@@ -192,6 +235,9 @@
 
         // Auto-reset após 10 segundos para o próximo cliente
         setTimeout(() => location.reload(), 10000);
+    }
+    function imprimirSenha() {
+        window.print();
     }
 </script>
 
