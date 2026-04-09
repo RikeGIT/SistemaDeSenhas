@@ -82,4 +82,24 @@ public class AtendimentoService {
                 .findByGuicheIdAndDataHoraFimIsNull(guicheId)
                 .orElse(null);
     }
+
+    // NOVO MÉTODO PARA RECHAMAR SENHA
+    @Transactional
+    public Atendimento rechamar(Long atendimentoId){
+
+        Atendimento atendimento = atendimentoRepository.findById(atendimentoId)
+                .orElseThrow(() -> new RuntimeException("Atendimento não encontrado"));
+
+        Senha senha = atendimento.getSenha();
+
+        // mantém a senha como chamada
+        senha.setStatus(StatusSenha.CHAMADA);
+
+        // atualiza horário para subir novamente no painel
+        atendimento.setDataHoraInicio(LocalDateTime.now());
+
+        senhaRepository.save(senha);
+
+        return atendimentoRepository.save(atendimento);
+    }
 }
