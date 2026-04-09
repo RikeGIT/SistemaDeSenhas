@@ -2,149 +2,273 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+
+    <!-- RESPONSIVIDADE MOBILE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Totem de Senhas</title>
+
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
 
-        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; }
+        body{
+            font-family:Arial,sans-serif;
+            background:#f4f6f8;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            margin:0;
+            padding:15px;
+            box-sizing:border-box;
+        }
 
-        h1 { color: #333; margin-bottom: 30px; }
+        .container{
+            background:white;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.1);
+            width:100%;
+            max-width:500px;
+            text-align:center;
+        }
 
-        .section { margin-bottom: 30px; padding: 20px; border-radius: 10px; background: #fff; border: 1px solid #eee; }
+        h1{
+            color:#333;
+            margin-bottom:30px;
+        }
+
+        .section{
+            margin-bottom:30px;
+            padding:20px;
+            border-radius:10px;
+            background:#fff;
+            border:1px solid #eee;
+        }
 
         /* BOTÕES AGORA EM COLUNA */
-        .grid-botoes {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            margin-top: 15px;
+        .grid-botoes{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:15px;
+            margin-top:15px;
+            width:100%;
         }
 
         /* Estilo dos Botões Dinâmicos */
-        .btn-opcao {
-            padding: 15px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            border: 2px solid #007bff;
-            background: white;
-            color: #007bff;
-            border-radius: 10px;
-            width: 250px;
-            transition: 0.3s;
+        .btn-opcao{
+            padding:15px 20px;
+            font-size:1rem;
+            font-weight:bold;
+            cursor:pointer;
+            border:2px solid #007bff;
+            background:white;
+            color:#007bff;
+            border-radius:10px;
+            width:250px;
+            max-width:100%;
+            transition:0.3s;
         }
 
-        .btn-opcao:hover { background: #e7f1ff; }
-
-        .btn-opcao.selecionado { background: #007bff; color: white; }
-
-        .btn-voltar {
-            margin-top: 25px;
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            background: #dc3545;
-            color: white;
-            border-radius: 10px;
-            width: 200px;
-            transition: 0.3s;
+        .btn-opcao:hover{
+            background:#e7f1ff;
         }
 
-        .btn-voltar:hover {
-            background: #b02a37;
-            transform: scale(1.05);
+        .btn-opcao.selecionado{
+            background:#007bff;
+            color:white;
         }
 
-        #resultado {
-            margin-top: 30px;
-            padding: 20px;
-            border: 3px dashed #28a745;
-            border-radius: 15px;
-            display: none;
-            background: #f8fff9;
+        .btn-voltar{
+            margin-top:25px;
+            padding:15px 30px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+            border:none;
+            background:#dc3545;
+            color:white;
+            border-radius:10px;
+            width:200px;
+            max-width:100%;
+            transition:0.3s;
         }
 
-        #senhaCodigo { font-size: 70px; color: #28a745; margin: 10px 0; font-weight: bold; }
-
-        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
-
-        @media print {
-            @page {
-                margin: 0;
-            }
-
-            body {
-                margin: 1cm;
-                background: white;
-            }
-            body * {
-                visibility: hidden;
-            }
-            #resultado, #resultado * {
-                visibility: visible;
-            }
-
-            #resultado {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 95%;
-                border: none !important;
-                background: white !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-                text-align: center !important;
-            }
-            #resultado button {
-                display: none !important;
-            }
-            h1 {
-                display: none !important;
-            }
+        .btn-voltar:hover{
+            background:#b02a37;
+            transform:scale(1.05);
         }
+
+        #resultado{
+            margin-top:30px;
+            padding:20px;
+            border:3px dashed #28a745;
+            border-radius:15px;
+            display:none;
+            background:#f8fff9;
+        }
+
+        #senhaCodigo{
+            font-size:70px;
+            color:#28a745;
+            margin:10px 0;
+            font-weight:bold;
+        }
+
+        hr{
+            border:0;
+            border-top:1px solid #eee;
+            margin:20px 0;
+        }
+
+        /* ------------------------- */
+        /* RESPONSIVIDADE MOBILE */
+        /* ------------------------- */
+
+        @media(max-width:600px){
+
+            .container{
+                padding:20px;
+            }
+
+            h1{
+                font-size:22px;
+            }
+
+            .section{
+                padding:15px;
+            }
+
+            .btn-opcao{
+                width:100%;
+                font-size:16px;
+                padding:14px;
+            }
+
+            .btn-voltar{
+                width:100%;
+                font-size:16px;
+            }
+
+            #senhaCodigo{
+                font-size:55px;
+            }
+
+            #detalhesSenha{
+                font-size:18px;
+            }
+
+        }
+
+        @media(max-width:400px){
+
+            #senhaCodigo{
+                font-size:45px;
+            }
+
+        }
+
+        @media print{
+
+            @page{
+                margin:0;
+            }
+
+            body{
+                margin:1cm;
+                background:white;
+            }
+
+            body *{
+                visibility:hidden;
+            }
+
+            #resultado,
+            #resultado *{
+                visibility:visible;
+            }
+
+            #resultado{
+                position:absolute;
+                left:0;
+                top:0;
+                width:95%;
+                border:none !important;
+                background:white !important;
+                display:flex !important;
+                flex-direction:column !important;
+                align-items:center !important;
+                justify-content:center !important;
+                text-align:center !important;
+            }
+
+            #resultado button{
+                display:none !important;
+            }
+
+            h1{
+                display:none !important;
+            }
+
+        }
+
     </style>
 </head>
+
 <body>
 
 <div class="container" id="totem-interface">
+
     <h1>Autoatendimento</h1>
 
     <div class="section" id="secao-servicos">
+
         <h2>1. Selecione uma Opção</h2>
+
         <div id="container-servicos" class="grid-botoes">
         </div>
+
     </div>
 
-    <div class="section" id="secao-prioridades" style="display: none;">
+    <div class="section" id="secao-prioridades" style="display:none;">
+
         <h2>2. Selecione a Prioridade</h2>
+
         <div id="container-prioridades" class="grid-botoes">
         </div>
 
-        <button class="btn-voltar" onclick="voltarParaServicos()">← Voltar</button>
+        <button class="btn-voltar" onclick="voltarParaServicos()">
+            ← Voltar
+        </button>
+
     </div>
 
-    <div id="resultado" style="text-align: center;">
-        <h2 style="margin-bottom: 5px;">Sua Senha:</h2>
-        <div id="senhaCodigo" style="font-size: 80px; margin: 10px 0;"></div>
-        <p id="detalhesSenha" style="font-size: 20px; font-weight: bold;"></p>
-        <p style="margin-top: 10px;">Aguarde ser chamado no painel.</p>
+    <div id="resultado" style="text-align:center;">
 
-        <button onclick="imprimirSenha()" class="btn-opcao" style="background-color: #28a745; color: white; border: none; margin-top: 20px; margin-bottom: 20px;">
+        <h2 style="margin-bottom:5px;">Sua Senha:</h2>
+
+        <div id="senhaCodigo" style="font-size:80px;margin:10px 0;"></div>
+
+        <p id="detalhesSenha" style="font-size:20px;font-weight:bold;"></p>
+
+        <p style="margin-top:10px;">Aguarde ser chamado no painel.</p>
+
+        <button onclick="imprimirSenha()" class="btn-opcao" style="background-color:#28a745;color:white;border:none;margin-top:20px;margin-bottom:20px;">
             imprimir senha
         </button>
+
         <br>
-        <button onclick="location.reload()" style="background: none; border: 1px solid #ccc; padding: 5px 10px; cursor: pointer;">
+
+        <button onclick="location.reload()" style="background:none;border:1px solid #ccc;padding:5px 10px;cursor:pointer;">
             Retirar outra senha
         </button>
+
     </div>
+
 </div>
 
 <script>
+
     let servicoSelecionadoId = null;
 
     window.onload = () => {
@@ -152,102 +276,145 @@
     };
 
     // 1. Busca Serviços no Banco
-    async function carregarServicos() {
+    async function carregarServicos(){
+
         const resp = await fetch('/servicos');
         const servicos = await resp.json();
+
         const container = document.getElementById('container-servicos');
 
         servicos.forEach(s => {
+
             const btn = document.createElement('button');
-            btn.className = "btn-opcao";
-            btn.innerText = s.nome;
-            btn.onclick = () => selecionarServico(s.id, btn);
+
+            btn.className="btn-opcao";
+
+            btn.innerText=s.nome;
+
+            btn.onclick=()=>selecionarServico(s.id,btn);
+
             container.appendChild(btn);
+
         });
+
     }
 
     // 2. Lógica ao clicar no serviço
-    function selecionarServico(id, botao) {
-        servicoSelecionadoId = id;
+    function selecionarServico(id,botao){
 
-        // Visual: Marcar botão selecionado
-        document.querySelectorAll("#container-servicos .btn-opcao").forEach(b => b.classList.remove("selecionado"));
+        servicoSelecionadoId=id;
+
+// Visual: Marcar botão selecionado
+        document.querySelectorAll("#container-servicos .btn-opcao")
+            .forEach(b=>b.classList.remove("selecionado"));
+
         botao.classList.add("selecionado");
 
-        // Esconde serviços e mostra prioridades
-        document.getElementById('secao-servicos').style.display = 'none';
+// Esconde serviços e mostra prioridades
+        document.getElementById('secao-servicos').style.display='none';
 
-        // Carregar prioridades e mostrar seção
+// Carregar prioridades e mostrar seção
         carregarPrioridades();
-        document.getElementById('secao-prioridades').style.display = 'block';
+        document.getElementById('secao-prioridades').style.display='block';
+
     }
 
     // 3. Busca Prioridades no Banco
-    async function carregarPrioridades() {
-        const resp = await fetch('/prioridades');
-        const prioridades = await resp.json();
-        const container = document.getElementById('container-prioridades');
-        container.innerHTML = ""; // Limpa para não duplicar
+    async function carregarPrioridades(){
 
-        prioridades.forEach(p => {
-            const btn = document.createElement('button');
-            btn.className = "btn-opcao";
-            btn.innerHTML = `${p.nome}`;
-            btn.onclick = () => gerarSenhaFinal(p.id);
+        const resp=await fetch('/prioridades');
+
+        const prioridades=await resp.json();
+
+        const container=document.getElementById('container-prioridades');
+
+        container.innerHTML=""; // Limpa para não duplicar
+
+        prioridades.forEach(p=>{
+
+            const btn=document.createElement('button');
+
+            btn.className="btn-opcao";
+
+            btn.innerHTML=`${p.nome}`;
+
+            btn.onclick=()=>gerarSenhaFinal(p.id);
+
             container.appendChild(btn);
+
         });
+
     }
 
     function voltarParaServicos(){
 
-        // Resetar serviço selecionado
-        servicoSelecionadoId = null;
+// Resetar serviço selecionado
+        servicoSelecionadoId=null;
 
-        // Remover seleção visual dos botões
+// Remover seleção visual dos botões
         document.querySelectorAll("#container-servicos .btn-opcao")
-            .forEach(b => b.classList.remove("selecionado"));
+            .forEach(b=>b.classList.remove("selecionado"));
 
-        // Voltar telas
-        document.getElementById('secao-prioridades').style.display = 'none';
-        document.getElementById('secao-servicos').style.display = 'block';
+// Voltar telas
+        document.getElementById('secao-prioridades').style.display='none';
+        document.getElementById('secao-servicos').style.display='block';
+
     }
 
     // 4. Envia para o Backend e mostra o resultado
-    async function gerarSenhaFinal(prioridadeId) {
-        const payload = {
-            servicoId: servicoSelecionadoId,
-            prioridadeId: prioridadeId
+    async function gerarSenhaFinal(prioridadeId){
+
+        const payload={
+            servicoId:servicoSelecionadoId,
+            prioridadeId:prioridadeId
         };
 
-        try {
-            const resp = await fetch('/senha', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+        try{
+
+            const resp=await fetch('/senha',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify(payload)
             });
 
-            if (resp.ok) {
-                const senha = await resp.json();
+            if(resp.ok){
+
+                const senha=await resp.json();
+
                 exibirResultado(senha);
+
             }
-        } catch (error) {
+
+        }catch(error){
+
             alert("Erro ao conectar com o servidor.");
+
         }
+
     }
 
-    function exibirResultado(senha) {
-        // Esconde as seleções e mostra a senha grande
-        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-        document.getElementById('resultado').style.display = 'block';
-        document.getElementById('senhaCodigo').innerText = senha.codigo;
-        document.getElementById('detalhesSenha').innerText = `Serviço: ${senha.servico}`;
+    function exibirResultado(senha){
 
-        // Auto-reset após 10 segundos para o próximo cliente
-        setTimeout(() => location.reload(), 10000);
+// Esconde as seleções e mostra a senha grande
+        document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+
+        document.getElementById('resultado').style.display='block';
+
+        document.getElementById('senhaCodigo').innerText=senha.codigo;
+
+        document.getElementById('detalhesSenha').innerText=`Serviço: ${senha.servico}`;
+
+// Auto-reset após 10 segundos para o próximo cliente
+        setTimeout(()=>location.reload(),10000);
+
     }
-    function imprimirSenha() {
+
+    function imprimirSenha(){
+
         window.print();
+
     }
+
 </script>
 
 </body>
