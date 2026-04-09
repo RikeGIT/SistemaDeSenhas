@@ -3,103 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <title>Painel de Senhas</title>
+
     <style>
-        body{ font-family: Arial, Helvetica, sans-serif; background:#f4f6f9; margin:0; }
-        #layout{ display:flex; }
-        #painelCentral{ flex:1; text-align:center; }
-        h1{ margin-top:30px; font-size:50px; color:#1a237e; }
-        h2{ font-size:28px; color:#333; }
-        #senhaAtualBox{ margin-top:60px; }
-        #senhaAtual{ font-size:90px; font-weight:bold; background:white; color:#1a237e; padding:40px 80px; border-radius:12px; display:inline-block; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-        #historicoLateral{ width:260px; background:white; border-left:3px solid #e0e0e0; padding:20px; height:100vh; }
-        #historicoLateral h2{ text-align:center; }
-        #lista{ margin-top:20px; }
-        .item{ font-size:26px; margin:10px 0; padding:12px; background:#f5f5f5; border-radius:8px; text-align:center; }
+
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            background:#f4f6f9;
+            margin:0;
+        }
+
+        #layout{
+            display:flex;
+        }
+
+        #painelCentral{
+            flex:1;
+            text-align:center;
+        }
+
+        h1{
+            margin-top:30px;
+            font-size:50px;
+            color:#1a237e;
+        }
+
+        #senhaAtualBox{
+            margin-top:60px;
+        }
+
+        #linhaPainel{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:120px;
+            margin-top:30px;
+        }
+
+        .titulo{
+            font-size:30px;
+            font-weight:bold;
+            color:#333;
+        }
+
+        .valor{
+            font-size:90px;
+            font-weight:bold;
+            background:white;
+            color:#1a237e;
+            padding:40px 80px;
+            border-radius:12px;
+            display:inline-block;
+            box-shadow:0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #historicoLateral{
+            width:260px;
+            background:white;
+            border-left:3px solid #e0e0e0;
+            padding:20px;
+            height:100vh;
+        }
+
+        #historicoLateral h2{
+            text-align:center;
+        }
+
+        #lista{
+            margin-top:20px;
+        }
+
+        .item{
+            font-size:26px;
+            margin:10px 0;
+            padding:12px;
+            background:#f5f5f5;
+            border-radius:8px;
+            text-align:center;
+        }
+
     </style>
 </head>
+
 <body>
 
 <div id="layout">
+
     <div id="painelCentral">
+
         <h1>Painel de Atendimento</h1>
+
         <div id="senhaAtualBox">
-            <h2>Senha Atual</h2>
-            <div id="senhaAtual">---</div>
+
+            <div id="linhaPainel">
+
+                <div>
+                    <div class="titulo">Senha</div>
+                    <div id="senhaAtual" class="valor">---</div>
+                </div>
+
+                <div>
+                    <div class="titulo">Guichê</div>
+                    <div id="guicheAtual" class="valor">---</div>
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
     <div id="historicoLateral">
+
         <h2>Últimas Chamadas</h2>
+
         <div id="lista"></div>
+
     </div>
+
 </div>
 
 <audio id="audioChamada" src="/audio/chamada.mp3" preload="auto"></audio>
 
 <script>
+
     let historico = JSON.parse(localStorage.getItem("historicoSenhas")) || [];
+
     let ultimaSenhaCodigo = localStorage.getItem("ultimaSenhaCodigo") || null; // Variável para controlar quando o som deve tocar
 
+
     async function atualizarPainel(){
+
         try{
-            const response = await fetch("/senha");
-            const senhas = await response.json();
+
+            const response = await fetch("/atendimentos/painel");
+
+            const atendimentos = await response.json();
 
             const senhaAtualDiv = document.getElementById("senhaAtual");
+
+            const guicheAtualDiv = document.getElementById("guicheAtual");
+
             const lista = document.getElementById("lista");
 
             let senhaAtual = null;
 
-            senhas.forEach(function(senha){
-                if(senha.status === "CHAMADA"){
-                    senhaAtual = senha.codigo;
-                }
-            });
+            let guicheAtual = null;
+
+            if(atendimentos.length > 0){
+
+                senhaAtual = atendimentos[0].senha.codigo;
+
+                guicheAtual = atendimentos[0].guiche.numero;
+
+            }
 
             if(senhaAtual){
+
                 senhaAtualDiv.innerText = senhaAtual;
+
+                guicheAtualDiv.innerText = guicheAtual;
 
                 if(senhaAtual !== ultimaSenhaCodigo){
 
                     if(ultimaSenhaCodigo !== null){
+
                         const som = document.getElementById("audioChamada");
+
                         som.currentTime = 0;
+
                         som.play().catch(e => console.log("Interação necessária para áudio"));
+
                     }
 
                     ultimaSenhaCodigo = senhaAtual;
-                    // Salva a última senha chamada no navegador
+
+// Salva a última senha chamada no navegador
+
                     localStorage.setItem("ultimaSenhaCodigo", ultimaSenhaCodigo);
 
-                    if(!historico.includes(senhaAtual)){
-                        historico.unshift(senhaAtual);
+                    if(!historico.includes(senhaAtual + " - G" + guicheAtual)){
+
+                        historico.unshift(senhaAtual + " - G" + guicheAtual);
+
                     }
+
                 }
+
             }
 
             if(historico.length > 10){
+
                 historico.pop();
+
             }
 
-            // 2. Salva o array de histórico atualizado no navegador
+// 2. Salva o array de histórico atualizado no navegador
+
             localStorage.setItem("historicoSenhas", JSON.stringify(historico));
 
-            // Renderiza na tela
+// Renderiza na tela
+
             lista.innerHTML = "";
+
             historico.forEach(function(s){
+
                 const div = document.createElement("div");
+
                 div.className = "item";
-                div.innerText = "Senha " + s;
+
+                div.innerText = s;
+
                 lista.appendChild(div);
+
             });
 
         }catch(error){
+
             console.log("Erro ao atualizar painel");
+
         }
+
     }
 
-    setInterval(atualizarPainel, 2000);
+    setInterval(atualizarPainel,2000);
+
     atualizarPainel();
+
 </script>
+
 </body>
+
 </html>
