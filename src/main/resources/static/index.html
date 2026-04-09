@@ -199,6 +199,15 @@
     }
 
     function voltarParaServicos(){
+
+        // Resetar serviço selecionado
+        servicoSelecionadoId = null;
+
+        // Remover seleção visual dos botões
+        document.querySelectorAll("#container-servicos .btn-opcao")
+            .forEach(b => b.classList.remove("selecionado"));
+
+        // Voltar telas
         document.getElementById('secao-prioridades').style.display = 'none';
         document.getElementById('secao-servicos').style.display = 'block';
     }
