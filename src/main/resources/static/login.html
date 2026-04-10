@@ -13,9 +13,12 @@
 <body>
 <div class="card">
     <h2>Acesso Restrito</h2>
-    <input type="text" id="username" placeholder="Usuário">
-    <input type="password" id="password" placeholder="Senha">
-    <button onclick="fazerLogin()">ENTRAR</button>
+    <form onsubmit="event.preventDefault(); fazerLogin();">
+        <input type="text" id="username" placeholder="Usuário" required>
+        <input type="password" id="password" placeholder="Senha" required>
+
+        <button type="submit">ENTRAR</button>
+    </form>
 </div>
 
 <script>
