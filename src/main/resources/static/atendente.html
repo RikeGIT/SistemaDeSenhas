@@ -225,20 +225,26 @@
 
     async function chamarProximo() {
         try {
-            const response = await fetch(`/atendimentos/chamar/${guicheIdLogado}`, {
-                method: 'POST'
-            });
+            const response = await fetch(`/atendimentos/chamar/${guicheIdLogado}`, { method: 'POST' });
 
             if (response.status === 204) {
-                alert("Não há senhas aguardando para este serviço.");
+                alert("Não há senhas aguardando.");
+                return;
+            }
+
+            if (!response.ok) {
+                const dadosErro = await response.json();
+                const mensagem = dadosErro.message || "Existe uma senha recem chamada na fila, aguarde um pouco.";
+
+                alert(`⚠️ Atenção: ${mensagem}`);
                 return;
             }
 
             const data = await response.json();
             exibirAtendimento(data);
-            adicionarHistorico(data); // Salva no histórico e no localStorage
+            adicionarHistorico(data);
         } catch (error) {
-            alert("Erro ao chamar senha.");
+            alert("Erro na comunicação com o servidor.");
         }
     }
 

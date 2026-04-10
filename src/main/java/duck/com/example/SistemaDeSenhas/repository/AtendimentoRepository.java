@@ -12,6 +12,7 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> 
 
     long countByGuicheServicoId(Long servicoId);
 
-    // NOVO - buscar todos atendimentos ativos
+
     List<Atendimento> findByDataHoraFimIsNull();
+    Atendimento findFirstByOrderByDataHoraInicioDesc();
 }

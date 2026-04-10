@@ -28,9 +28,17 @@ public class AtendimentoService {
 
     @Transactional
     public Atendimento chamarProxima(Long guicheId) {
-
         Guiche guiche = guicheRepository.findById(guicheId)
                 .orElseThrow(() -> new RuntimeException("Guichê não encontrado"));
+
+        Atendimento ultimoGeral = atendimentoRepository.findFirstByOrderByDataHoraInicioDesc();
+
+        if (ultimoGeral != null && ultimoGeral.getDataHoraFim() == null) {
+            long segundosDecorridos = java.time.Duration.between(ultimoGeral.getDataHoraInicio(), LocalDateTime.now()).toSeconds();
+            if (segundosDecorridos < 30) {
+                throw new RuntimeException("Aguarde " + (30 - segundosDecorridos) + " segundos para chamar a próxima senha.");
+            }
+        }
 
         // verifica se existe atendimento em aberto
         Atendimento atual = atendimentoRepository
