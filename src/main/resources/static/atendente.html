@@ -192,177 +192,138 @@
 </div>
 
 <script>
-
     let atendimentoAtivoId = null;
     const guicheIdLogado = localStorage.getItem('guicheId');
 
-    let historico = [];
+    let historico = JSON.parse(localStorage.getItem('historicoAtendente')) || [];
 
     window.onload = () => {
-
         if (!guicheIdLogado) {
-            window.location.href="/selecionar-guiche.html";
+            window.location.href = "/selecionar-guiche.html";
             return;
         }
 
-        document.getElementById('infoGuiche')
-            .innerText=`Logado no Guichê ID: ${guicheIdLogado}`;
+        document.getElementById('infoGuiche').innerText = `Logado no Guichê ID: ${guicheIdLogado}`;
 
         verificarAtendimentoAtual();
+        atualizarHistorico(); // Mostra o histórico salvo assim que a página carrega
     };
 
-    async function trocarGuiche(){
-
-        try{
-
+    async function trocarGuiche() {
+        try {
             const response = await fetch(`/atendimentos/atual/${guicheIdLogado}`);
-
-            if(response.status===200){
+            if (response.status === 200) {
                 alert("Finalize o atendimento atual antes de trocar de guichê.");
                 return;
             }
-
             localStorage.removeItem('guicheId');
-            window.location.href="/selecionar-guiche.html";
-
-        }catch(error){
+            window.location.href = "/selecionar-guiche.html";
+        } catch (error) {
             alert("Erro ao verificar atendimento atual.");
         }
     }
 
-    async function chamarProximo(){
-
-        try{
-
-            const response = await fetch(`/atendimentos/chamar/${guicheIdLogado}`,{
-                method:'POST'
+    async function chamarProximo() {
+        try {
+            const response = await fetch(`/atendimentos/chamar/${guicheIdLogado}`, {
+                method: 'POST'
             });
 
-            if(response.status===204){
+            if (response.status === 204) {
                 alert("Não há senhas aguardando para este serviço.");
                 return;
             }
 
             const data = await response.json();
-
             exibirAtendimento(data);
-
-            adicionarHistorico(data);
-
-        }catch(error){
+            adicionarHistorico(data); // Salva no histórico e no localStorage
+        } catch (error) {
             alert("Erro ao chamar senha.");
         }
     }
 
-    async function verificarAtendimentoAtual(){
-
-        try{
-
+    async function verificarAtendimentoAtual() {
+        try {
             const response = await fetch(`/atendimentos/atual/${guicheIdLogado}`);
-
-            if(response.status===200){
-
+            if (response.status === 200) {
                 const data = await response.json();
-
-                exibirAtendimento(data,true);
-
+                exibirAtendimento(data, true);
             }
-
-        }catch(error){
-            console.error("Erro ao verificar atendimento atual",error);
+        } catch (error) {
+            console.error("Erro ao verificar atendimento atual", error);
         }
     }
 
-    function exibirAtendimento(data,retomado=false){
+    function exibirAtendimento(data, retomado = false) {
+        atendimentoAtivoId = data.id;
+        document.getElementById('atendimentoAtual').style.display = 'block';
+        document.getElementById('senhaChamada').innerText = data.senha?.codigo ?? "N/A";
 
-        atendimentoAtivoId=data.id;
-
-        document.getElementById('atendimentoAtual').style.display='block';
-
-        document.getElementById('senhaChamada')
-            .innerText=data.senha?.codigo ?? "N/A";
-
-        const hora=new Date(data.dataHoraInicio).toLocaleTimeString();
-
-        document.getElementById('detalhesAtendimento').innerText=
-            (retomado?"Retomado - ":"")+`Iniciado em: ${hora}`;
+        const hora = new Date(data.dataHoraInicio).toLocaleTimeString();
+        document.getElementById('detalhesAtendimento').innerText =
+            (retomado ? "Retomado - " : "") + `Iniciado em: ${hora}`;
     }
 
-    async function finalizarAtendimento(){
-
-        if(!atendimentoAtivoId) return;
-
-        try{
-
-            await fetch(`/atendimentos/finalizar/${atendimentoAtivoId}`,{
-                method:'PUT'
+    async function finalizarAtendimento() {
+        if (!atendimentoAtivoId) return;
+        try {
+            await fetch(`/atendimentos/finalizar/${atendimentoAtivoId}`, {
+                method: 'PUT'
             });
-
             alert("Atendimento finalizado!");
-
-            document.getElementById('atendimentoAtual').style.display='none';
-
-            atendimentoAtivoId=null;
-
-        }catch(error){
+            document.getElementById('atendimentoAtual').style.display = 'none';
+            atendimentoAtivoId = null;
+        } catch (error) {
             alert("Erro ao finalizar atendimento.");
         }
     }
 
-    function adicionarHistorico(data){
+    // Função unificada para adicionar ao histórico e persistir
+    function adicionarHistorico(data) {
+        // Verifica se a senha já não está no topo para não duplicar no rechamado
+        if (!historico.find(h => h.id === data.id)) {
+            historico.unshift(data);
+            if (historico.length > 10) historico.pop();
 
-        historico.unshift(data);
-
-        if(historico.length>10){
-            historico.pop();
+            localStorage.setItem('historicoAtendente', JSON.stringify(historico));
+            atualizarHistorico();
         }
-
-        atualizarHistorico();
     }
 
-    function atualizarHistorico(){
+    function atualizarHistorico() {
+        const lista = document.getElementById('listaHistorico');
+        if (!lista) return;
 
-        const lista=document.getElementById('listaHistorico');
-
-        lista.innerHTML="";
-
-        historico.forEach(atendimento=>{
-
-            const div=document.createElement("div");
-
-            div.className="historico-item";
-
-            div.innerHTML=`
-<span>${atendimento.senha.codigo}</span>
-<button class="btn-rechamar" onclick="rechamarSenha(${atendimento.id})">
-Rechamar
-</button>
-`;
-
+        lista.innerHTML = "";
+        historico.forEach(atendimento => {
+            const div = document.createElement("div");
+            div.className = "historico-item";
+            div.innerHTML = `
+                <span>${atendimento.senha.codigo}</span>
+                <button class="btn-rechamar" onclick="rechamarSenha(${atendimento.id})">
+                    Rechamar
+                </button>
+            `;
             lista.appendChild(div);
-
         });
-
     }
 
-    async function rechamarSenha(atendimentoId){
-
-        try{
-
-            await fetch(`/atendimentos/rechamar/${atendimentoId}`,{
-                method:'POST'
+    async function rechamarSenha(atendimentoId) {
+        try {
+            const response = await fetch(`/atendimentos/rechamar/${atendimentoId}`, {
+                method: 'POST'
             });
 
-            alert("Senha rechamada!");
-
-        }catch(error){
-
+            if (response.ok) {
+                const data = await response.json();
+                alert("Senha rechamada!");
+                exibirAtendimento(data);
+                // Opcional: mover para o topo do histórico se quiser que o rechamado suba
+            }
+        } catch (error) {
             alert("Erro ao rechamar senha");
-
         }
-
     }
-
 </script>
 
 </body>

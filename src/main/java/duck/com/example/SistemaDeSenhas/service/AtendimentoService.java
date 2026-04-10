@@ -85,21 +85,50 @@ public class AtendimentoService {
 
     // MÉTODO PARA RECHAMAR SENHA
     @Transactional
-    public Atendimento rechamar(Long atendimentoId){
-
+    public Atendimento rechamar(Long atendimentoId) {
         Atendimento atendimento = atendimentoRepository.findById(atendimentoId)
                 .orElseThrow(() -> new RuntimeException("Atendimento não encontrado"));
 
+        // Verifica se o guichê já tem um atendimento aberto (fantasma ou real)
+        Atendimento atual = atendimentoRepository
+                .findByGuicheIdAndDataHoraFimIsNull(atendimento.getGuiche().getId())
+                .orElse(null);
+
+        // Se houver um atendimento aberto e NÃO for este que estamos tentando rechamar, bloqueia
+        if (atual != null && !atual.getId().equals(atendimentoId)) {
+            throw new RuntimeException("Finalize o atendimento atual antes de rechamar uma senha antiga.");
+        }
+
         Senha senha = atendimento.getSenha();
-
-        // mantém a senha como chamada
         senha.setStatus(StatusSenha.CHAMADA);
-
-        // atualiza horário para subir novamente no painel
-        atendimento.setDataHoraInicio(LocalDateTime.now());
-
         senhaRepository.save(senha);
 
+        // O PULO DO GATO: Removemos a data de fim para ele voltar a ser "Ativo" no sistema
+        atendimento.setDataHoraFim(null);
+        atendimento.setDataHoraInicio(LocalDateTime.now());
+
+        Guiche guiche = atendimento.getGuiche();
+        guiche.setOcupado(true);
+        guicheRepository.save(guiche);
+
         return atendimentoRepository.save(atendimento);
+    }
+
+    @Transactional
+    public void finalizar(Long atendimentoId) {
+        Atendimento atendimento = atendimentoRepository.findById(atendimentoId)
+                .orElseThrow(() -> new RuntimeException("Atendimento não encontrado"));
+
+        atendimento.setDataHoraFim(LocalDateTime.now());
+
+        Senha senha = atendimento.getSenha();
+        senha.setStatus(StatusSenha.FINALIZADA);
+
+        Guiche guiche = atendimento.getGuiche();
+        guiche.setOcupado(false);
+
+        senhaRepository.save(senha);
+        guicheRepository.save(guiche);
+        atendimentoRepository.save(atendimento);
     }
 }

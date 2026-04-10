@@ -55,4 +55,9 @@ public class AtendimentoController {
 
         return ResponseEntity.ok(atendimento);
     }
+    @PutMapping("/finalizar/{id}")
+    public ResponseEntity<Void> finalizar(@PathVariable Long id) {
+        atendimentoService.finalizar(id);
+        return ResponseEntity.ok().build();
+    }
 }
