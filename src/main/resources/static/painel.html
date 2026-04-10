@@ -2,6 +2,9 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Painel de Senhas</title>
 
     <style>
@@ -12,13 +15,19 @@
             margin:0;
         }
 
+        /* LAYOUT PRINCIPAL */
+
         #layout{
             display:flex;
+            min-height:100vh;
         }
+
+        /* PAINEL CENTRAL */
 
         #painelCentral{
             flex:1;
             text-align:center;
+            padding:20px;
         }
 
         h1{
@@ -26,6 +35,8 @@
             font-size:50px;
             color:#1a237e;
         }
+
+        /* SENHA ATUAL */
 
         #senhaAtualBox{
             margin-top:60px;
@@ -56,12 +67,13 @@
             box-shadow:0 4px 10px rgba(0,0,0,0.1);
         }
 
+        /* HISTÓRICO */
+
         #historicoLateral{
             width:260px;
             background:white;
             border-left:3px solid #e0e0e0;
             padding:20px;
-            height:100vh;
         }
 
         #historicoLateral h2{
@@ -79,6 +91,61 @@
             background:#f5f5f5;
             border-radius:8px;
             text-align:center;
+        }
+
+        /* RESPONSIVIDADE */
+
+        @media (max-width:900px){
+
+            #layout{
+                flex-direction:column;
+            }
+
+            #historicoLateral{
+                width:100%;
+                border-left:none;
+                border-top:3px solid #e0e0e0;
+            }
+
+        }
+
+        @media (max-width:768px){
+
+            h1{
+                font-size:36px;
+            }
+
+            #linhaPainel{
+                gap:40px;
+            }
+
+            .titulo{
+                font-size:22px;
+            }
+
+            .valor{
+                font-size:60px;
+                padding:20px 40px;
+            }
+
+        }
+
+        @media (max-width:480px){
+
+            #linhaPainel{
+                flex-direction:row;
+                gap:20px;
+            }
+
+            .valor{
+                font-size:45px;
+                padding:15px 25px;
+            }
+
+            .titulo{
+                font-size:18px;
+            }
+
         }
 
     </style>
@@ -128,8 +195,7 @@
 
     let historico = JSON.parse(localStorage.getItem("historicoSenhas")) || [];
 
-    let ultimaSenhaCodigo = localStorage.getItem("ultimaSenhaCodigo") || null; // Variável para controlar quando o som deve tocar
-
+    let ultimaSenhaCodigo = localStorage.getItem("ultimaSenhaCodigo") || null;
 
     async function atualizarPainel(){
 
@@ -177,8 +243,6 @@
 
                     ultimaSenhaCodigo = senhaAtual;
 
-// Salva a última senha chamada no navegador
-
                     localStorage.setItem("ultimaSenhaCodigo", ultimaSenhaCodigo);
 
                     if(!historico.includes(senhaAtual + " - G" + guicheAtual)){
@@ -197,11 +261,7 @@
 
             }
 
-// 2. Salva o array de histórico atualizado no navegador
-
             localStorage.setItem("historicoSenhas", JSON.stringify(historico));
-
-// Renderiza na tela
 
             lista.innerHTML = "";
 
@@ -232,5 +292,4 @@
 </script>
 
 </body>
-
 </html>
