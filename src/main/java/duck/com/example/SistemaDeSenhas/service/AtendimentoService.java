@@ -83,7 +83,7 @@ public class AtendimentoService {
                 .orElse(null);
     }
 
-    // NOVO MÉTODO PARA RECHAMAR SENHA
+    // MÉTODO PARA RECHAMAR SENHA
     @Transactional
     public Atendimento rechamar(Long atendimentoId){
 

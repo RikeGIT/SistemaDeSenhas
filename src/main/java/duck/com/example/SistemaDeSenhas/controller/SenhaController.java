@@ -2,6 +2,7 @@ package duck.com.example.SistemaDeSenhas.controller;
 
 import duck.com.example.SistemaDeSenhas.entity.Senha;
 import duck.com.example.SistemaDeSenhas.repository.SenhaRepository;
+import duck.com.example.SistemaDeSenhas.service.ImpressaoService;
 import duck.com.example.SistemaDeSenhas.service.SenhaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class SenhaController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("mensagem", "Senha gerada com sucesso!");
+        response.put("id", novaSenha.getId());
         response.put("codigo", novaSenha.getCodigo());
         response.put("servico", novaSenha.getServico().getNome());
         response.put("dataHora", novaSenha.getDataHoraGeracao().toString());
@@ -61,6 +63,18 @@ public class SenhaController {
         }
 
         return null;
+    }
+    @Autowired
+    private ImpressaoService impressaoService;
+
+    @PostMapping("/{id}/imprimir")
+    public ResponseEntity<Void> imprimirSenha(@PathVariable Long id) {
+        Senha senha = senhaRepository.findById(id).orElse(null);
+        if (senha != null) {
+            impressaoService.imprimirSenhaSilenciosa(senha);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     // Deletar

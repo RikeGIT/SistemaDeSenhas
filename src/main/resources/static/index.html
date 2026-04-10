@@ -91,7 +91,7 @@
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 95%;
+                width: 80%;
                 border: none !important;
                 background: white !important;
                 display: flex !important;
@@ -146,6 +146,7 @@
 
 <script>
     let servicoSelecionadoId = null;
+    let idSenhaGerada = null;
 
     window.onload = () => {
         carregarServicos();
@@ -228,9 +229,17 @@
 
             if (resp.ok) {
                 const senha = await resp.json();
+
+                // IMPORTANTE: Para isso funcionar, seu Backend (Controller)
+                // deve incluir o "id" no mapa de resposta (HashMap).
+                idSenhaGerada = senha.id;
+
                 exibirResultado(senha);
+            } else {
+                alert("Erro ao gerar senha.");
             }
         } catch (error) {
+            console.error("Erro na comunicação:", error);
             alert("Erro ao conectar com o servidor.");
         }
     }
@@ -245,8 +254,19 @@
         // Auto-reset após 10 segundos para o próximo cliente
         setTimeout(() => location.reload(), 10000);
     }
-    function imprimirSenha() {
-        window.print();
+    async function imprimirSenha() {
+        if (!idSenhaGerada) return;
+
+        try {
+            const resp = await fetch(`/senha/${idSenhaGerada}/imprimir`, { method: 'POST' });
+            if (resp.ok) {
+                alert("Impressão enviada com sucesso!");
+            } else {
+                alert("Erro ao solicitar impressão ao servidor.");
+            }
+        } catch (error) {
+            console.error("Erro na comunicação:", error);
+        }
     }
 </script>
 
