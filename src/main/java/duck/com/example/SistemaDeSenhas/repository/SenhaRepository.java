@@ -2,12 +2,15 @@ package duck.com.example.SistemaDeSenhas.repository;
 
 import duck.com.example.SistemaDeSenhas.entity.Senha;
 import duck.com.example.SistemaDeSenhas.entity.Servico;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface SenhaRepository extends JpaRepository<Senha, Long> {
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM Senha s " +
             "WHERE s.status = 'AGUARDANDO' AND s.servico = :servico " +
             "ORDER BY s.prioridade.peso DESC, s.dataHoraGeracao ASC")
@@ -16,4 +19,5 @@ public interface SenhaRepository extends JpaRepository<Senha, Long> {
     // Counts para poder realizar um DELETE em cascade.
     long countByPrioridadeId(Long prioridadeId);
     long countByServicoId(Long servicoId);
+    void deleteAll();
 }

@@ -66,14 +66,19 @@
     <div class="section">
         <h2>Guichês</h2>
 
-        <input id="gui-numero" placeholder="Número">
+        <input id="gui-nome" placeholder="Nome (ex: Caixa 01)"> <input id="gui-numero" type="number" placeholder="Número">
         <input id="gui-setor" placeholder="Setor">
         <select id="gui-servico"></select>
         <button onclick="salvarGuiche()">Adicionar</button>
 
         <table id="tabela-guiches">
             <thead>
-            <tr><th>Número</th><th>Setor</th><th>Serviço</th><th>Ações</th></tr>
+            <tr>
+                <th>Nome</th> <th>Número</th>
+                <th>Setor</th>
+                <th>Serviço</th>
+                <th>Ações</th>
+            </tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -98,6 +103,13 @@
             </thead>
             <tbody></tbody>
         </table>
+    </div>
+    <div class="section" style="border: 2px solid #dc3545;">
+        <h2 style="color: #dc3545;">Operações de Sistema</h2>
+        <p>Atenção: Esta ação apagará todas as senhas e atendimentos do dia.</p>
+        <button class="btn-del" onclick="resetarSistema()" style="padding: 15px; width: 100%;">
+            RESETAR FILA (FIM DO DIA)
+        </button>
     </div>
 
 </div>
@@ -126,6 +138,7 @@
         carregarTabela('/prioridades', 'tabela-prioridades');
         carregarGuiches();
         popularSelectServicos();
+        carregarAtendentes();
     }
 
     /* =======================
@@ -269,11 +282,11 @@
         dados.forEach(g => {
             tbody.innerHTML += `
         <tr>
-            <td>${g.numero}</td>
+            <td>${g.nome || 'N/A'}</td> <td>${g.numero}</td>
             <td>${g.setor}</td>
             <td>${g.servico.nome}</td>
             <td>
-                <button onclick="editarGuiche(${g.id}, '${g.numero}', '${g.setor}', ${g.servico.id})">Editar</button>
+                <button onclick="editarGuiche(${g.id}, '${g.nome}', '${g.numero}', '${g.setor}', ${g.servico.id})">Editar</button>
                 <button class="btn-del" onclick="deletar('/guiche', ${g.id})">Remover</button>
             </td>
         </tr>`;
@@ -285,6 +298,7 @@
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body: JSON.stringify({
+                nome: document.getElementById('gui-nome').value, // Envia o nome
                 numero: parseInt(document.getElementById('gui-numero').value),
                 setor: document.getElementById('gui-setor').value,
                 servico: { id: parseInt(document.getElementById('gui-servico').value) },
@@ -292,10 +306,15 @@
             })
         });
 
+        // Limpa o campo nome após salvar
+        document.getElementById('gui-nome').value = "";
         carregarTudo();
     }
 
-    async function editarGuiche(id, numero, setor, servicoId){
+    async function editarGuiche(id, nome, numero, setor, servicoId){
+
+        const novoNome = prompt("Novo nome do guichê:", nome); // Prompt para o nome
+        if(novoNome === null) return;
 
         const novoNumero = prompt("Novo número:", numero);
         if(novoNumero === null) return;
@@ -307,6 +326,7 @@
             method:'PUT',
             headers:{'Content-Type':'application/json'},
             body: JSON.stringify({
+                nome: novoNome,
                 numero: parseInt(novoNumero),
                 setor: novoSetor,
                 servico: { id: servicoId }
@@ -432,6 +452,28 @@
 
         } else {
             alert("Erro ao cadastrar. O usuário pode já existir.");
+        }
+    }
+
+    async function resetarSistema() {
+        if (confirm("TEM CERTEZA? Isso apagará todo o histórico de hoje e não pode ser desfeito.")) {
+            try {
+                const response = await fetch('/senha/resetar-todas', {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert("Sistema resetado com sucesso para amanhã!");
+                    // Opcional: Limpar o localStorage de histórico se você quiser que o painel também limpe
+                    // localStorage.removeItem('historicoSenhas');
+                    carregarTudo();
+                } else {
+                    alert("Erro ao tentar resetar o sistema.");
+                }
+            } catch (error) {
+                console.error("Erro:", error);
+                alert("Erro de conexão com o servidor.");
+            }
         }
     }
 

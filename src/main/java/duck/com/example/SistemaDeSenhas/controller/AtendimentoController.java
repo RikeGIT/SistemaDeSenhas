@@ -55,6 +55,12 @@ public class AtendimentoController {
 
         return ResponseEntity.ok(atendimento);
     }
+
+    @GetMapping("/recentes")
+    public List<Atendimento> listarRecentes() {
+        // Retorna os últimos 5 atendimentos ordenados pelo ID decrescente
+        return atendimentoRepository.findTop5ByOrderByIdDesc();
+    }
     @PutMapping("/finalizar/{id}")
     public ResponseEntity<Void> finalizar(@PathVariable Long id) {
         atendimentoService.finalizar(id);

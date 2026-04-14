@@ -14,5 +14,5 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> 
 
 
     List<Atendimento> findByDataHoraFimIsNull();
-    Atendimento findFirstByOrderByDataHoraInicioDesc();
+    List<Atendimento> findTop5ByOrderByIdDesc();
 }

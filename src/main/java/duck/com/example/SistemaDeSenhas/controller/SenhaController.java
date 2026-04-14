@@ -82,4 +82,10 @@ public class SenhaController {
     public void deletar(@PathVariable Long id) {
         senhaRepository.deleteById(id);
     }
+
+    @DeleteMapping("/resetar-todas")
+    public ResponseEntity<Void> resetarTodasSenhas() {
+        senhaService.resetarFila(); // Método que criaremos no Service
+        return ResponseEntity.noContent().build();
+    }
 }
