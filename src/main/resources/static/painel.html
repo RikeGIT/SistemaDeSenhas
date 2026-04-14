@@ -2,196 +2,74 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Painel de Senhas</title>
-
     <style>
+        body { font-family: Arial, Helvetica, sans-serif; background: #f4f6f9; margin: 0; }
 
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            background:#f4f6f9;
-            margin:0;
+        #layout { display: flex; min-height: 100vh; }
+
+        #painelCentral { flex: 1; text-align: center; padding: 20px; display: flex; flex-direction: column; }
+        h1 { margin-top: 30px; font-size: 50px; color: #1a237e; }
+
+        #containerAtivos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            padding: 20px;
         }
 
-        /* LAYOUT PRINCIPAL */
-
-        #layout{
-            display:flex;
-            min-height:100vh;
+        /* CARDS DE ATENDIMENTO SIMULTÂNEO */
+        .card-ativo {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width: 280px;
+            border: 4px solid transparent;
+            transition: 0.3s;
         }
 
-        /* PAINEL CENTRAL */
-
-        #painelCentral{
-            flex:1;
-            text-align:center;
-            padding:20px;
+        /* Destaque para a senha que acabou de ser chamada */
+        .card-ativo.recente {
+            border-color: #28a745;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
         }
 
-        h1{
-            margin-top:30px;
-            font-size:50px;
-            color:#1a237e;
-        }
+        .piscar { animation: flash 1s iteration-count 3; }
+        @keyframes flash { 50% { opacity: 0.5; background-color: #e8f5e9; } }
 
-        /* SENHA ATUAL */
+        .titulo { font-size: 24px; font-weight: bold; color: #777; text-transform: uppercase; }
+        .senha { font-size: 80px; font-weight: bold; color: #1a237e; margin: 10px 0; }
+        .guiche { font-size: 30px; font-weight: bold; color: #333; }
 
-        #senhaAtualBox{
-            margin-top:60px;
-        }
-
-        #linhaPainel{
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            gap:120px;
-            margin-top:30px;
-        }
-
-        .titulo{
-            font-size:30px;
-            font-weight:bold;
-            color:#333;
-        }
-
-        .valor{
-            font-size: clamp(35px, 6vw, 90px); /* tamanho responsivo automático */
-            font-weight:bold;
-            background:white;
-            color:#1a237e;
-            padding:40px 40px;
-            border-radius:12px;
-            display:inline-block;
-            box-shadow:0 4px 10px rgba(0,0,0,0.1);
-
-            white-space: nowrap;        /* nunca quebra linha */
-            overflow: hidden;           /* evita estourar */
-            text-overflow: ellipsis;    /* coloca ... se ficar muito grande */
-            max-width: 100%;
-        }
-
-        /* HISTÓRICO */
-
-        #historicoLateral{
-            width:260px;
-            background:white;
-            border-left:3px solid #e0e0e0;
-            padding:20px;
-        }
-
-        #historicoLateral h2{
-            text-align:center;
-        }
-
-        #lista{
-            margin-top:20px;
-        }
-
-        .item{
-            font-size:26px;
-            margin:10px 0;
-            padding:12px;
-            background:#f5f5f5;
-            border-radius:8px;
-            text-align:center;
-        }
-
-        /* RESPONSIVIDADE */
+        /* HISTÓRICO LATERAL */
+        #historicoLateral { width: 260px; background: white; border-left: 3px solid #e0e0e0; padding: 20px; }
+        #historicoLateral h2 { text-align: center; }
+        #lista { margin-top: 20px; }
+        .item { font-size: 26px; margin: 10px 0; padding: 12px; background: #f5f5f5; border-radius: 8px; text-align: center; }
 
         @media (max-width:900px){
-
-            #layout{
-                flex-direction:column;
-            }
-
-            #historicoLateral{
-                width:100%;
-                border-left:none;
-                border-top:3px solid #e0e0e0;
-            }
-
+            #layout { flex-direction: column; }
+            #historicoLateral { width: 100%; border-left: none; border-top: 3px solid #e0e0e0; }
         }
-
-        @media (max-width:768px){
-
-            h1{
-                font-size:36px;
-            }
-
-            #linhaPainel{
-                gap:40px;
-            }
-
-            .titulo{
-                font-size:22px;
-            }
-
-            .valor{
-                font-size:60px;
-                padding:20px 40px;
-            }
-
-        }
-
-        @media (max-width:480px){
-
-            #linhaPainel{
-                flex-direction:row;
-                gap:20px;
-            }
-
-            .valor{
-                font-size:45px;
-                padding:15px 25px;
-            }
-
-            .titulo{
-                font-size:18px;
-            }
-
-        }
-
     </style>
 </head>
-
 <body>
 
 <div id="layout">
-
     <div id="painelCentral">
-
         <h1>Painel de Atendimento</h1>
-
-        <div id="senhaAtualBox">
-
-            <div id="linhaPainel">
-
-                <div>
-                    <div class="titulo">Senha</div>
-                    <div id="senhaAtual" class="valor">---</div>
-                </div>
-
-                <div>
-                    <div class="titulo">Guichê</div>
-                    <div id="guicheAtual" class="valor">---</div>
-                </div>
-
-            </div>
-
-        </div>
-
+        <div id="containerAtivos"></div>
     </div>
 
     <div id="historicoLateral">
-
         <h2>Últimas Chamadas</h2>
-
         <div id="lista"></div>
-
     </div>
-
 </div>
 
 <audio id="audioChamada" src="/audio/chamada.mp3" preload="auto"></audio>
@@ -204,67 +82,77 @@
     async function atualizarPainel() {
         try {
             const response = await fetch("/atendimentos/painel");
-            const atendimentos = await response.json();
+            let atendimentos = await response.json();
 
-            const senhaAtualDiv = document.getElementById("senhaAtual");
-            const guicheAtualDiv = document.getElementById("guicheAtual");
+            const containerAtivos = document.getElementById("containerAtivos");
 
-            if (atendimentos.length > 0) {
-
-                const atendimentoAtual = atendimentos[0];
-
-                const senhaAtual = atendimentoAtual.senha.codigo;
-
-                const numeroGuiche = atendimentoAtual.guiche.numero;
-
-                const setorGuiche = atendimentoAtual.guiche.setor;
-
-                // NOVO NOME DO GUICHÊ (EX: Caixa 1)
-                const nomeGuiche = `${setorGuiche} ${numeroGuiche}`;
-
-                // 1. Verifica se é uma senha nova para disparar o alerta
-                if (senhaAtual !== ultimaSenhaCodigo) {
-
-                    senhaAtualDiv.innerText = senhaAtual;
-                    guicheAtualDiv.innerText = nomeGuiche;
-
-                    executarAlertaReforcado();
-
-                    ultimaSenhaCodigo = senhaAtual;
-                    localStorage.setItem("ultimaSenhaCodigo", ultimaSenhaCodigo);
-
-                    // HISTÓRICO AGORA COM NOME REAL
-                    const entradaHistorico = `${senhaAtual} - ${nomeGuiche}`;
-
-                    if (!historico.includes(entradaHistorico)) {
-                        historico.unshift(entradaHistorico);
-                        if (historico.length > 10) historico.pop();
-                        localStorage.setItem("historicoSenhas", JSON.stringify(historico));
-                    }
-
-                    renderizarHistorico();
-                }
+            if (atendimentos.length === 0) {
+                containerAtivos.innerHTML = "<h2 style='color:#888; width: 100%;'>Nenhum atendimento no momento.</h2>";
+                return;
             }
+
+            atendimentos.sort((a, b) => new Date(b.dataHoraInicio) - new Date(a.dataHoraInicio));
+
+            // Pega o mais recente para regras de áudio e histórico
+            const atendimentoMaisRecente = atendimentos[0];
+            const senhaMaisRecente = atendimentoMaisRecente.senha.codigo;
+            const nomeGuicheRecente = `${atendimentoMaisRecente.guiche.setor} ${atendimentoMaisRecente.guiche.numero}`;
+
+            // Verifica se houve uma chamada NOVA
+            if (senhaMaisRecente !== ultimaSenhaCodigo) {
+                executarAlertaReforcado();
+
+                ultimaSenhaCodigo = senhaMaisRecente;
+                localStorage.setItem("ultimaSenhaCodigo", ultimaSenhaCodigo);
+
+                const entradaHistorico = `${senhaMaisRecente} - ${nomeGuicheRecente}`;
+                if (!historico.includes(entradaHistorico)) {
+                    historico.unshift(entradaHistorico);
+                    if (historico.length > 10) historico.pop();
+                    localStorage.setItem("historicoSenhas", JSON.stringify(historico));
+                }
+                renderizarHistorico();
+            }
+
+            // RENDERIZA TODOS OS ATENDIMENTOS SIMULTÂNEOS
+            containerAtivos.innerHTML = ""; // Limpa a tela
+
+            atendimentos.forEach((atendimento, index) => {
+                const senhaAtual = atendimento.senha.codigo;
+                const nomeGuiche = `${atendimento.guiche.setor} ${atendimento.guiche.numero}`;
+
+                // Se for o card mais recente E o som estiver tocando, aplica a classe de destaque
+                const classesDestaque = (index === 0 && loopSonoro !== null) ? "recente piscar" : "";
+
+                const div = document.createElement("div");
+                div.className = `card-ativo ${classesDestaque}`;
+                div.innerHTML = `
+                    <div class="titulo">Senha</div>
+                    <div class="senha">${senhaAtual}</div>
+                    <div class="guiche">${nomeGuiche}</div>
+                `;
+                containerAtivos.appendChild(div);
+            });
+
         } catch (error) {
-            console.log("Erro ao atualizar painel");
+            console.log("Erro ao atualizar painel:", error);
         }
     }
 
     function executarAlertaReforcado() {
         const som = document.getElementById("audioChamada");
-
         if (loopSonoro) clearInterval(loopSonoro);
 
         let execucoes = 0;
-
         const tocar = () => {
             som.currentTime = 0;
             som.play().catch(e => console.log("Aguardando interação para áudio"));
             execucoes++;
-
             if (execucoes >= 3) {
                 clearInterval(loopSonoro);
                 loopSonoro = null;
+                // Força uma atualização para remover a borda verde piscante quando o som parar
+                atualizarPainel();
             }
         };
 

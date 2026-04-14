@@ -43,6 +43,26 @@ public class AtendenteController {
             return ResponseEntity.ok(atendenteRepository.save(atendente));
         }).orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Atendente> atualizarAtendente(@PathVariable Long id, @RequestBody Atendente dadosAtualizados) {
+        return atendenteRepository.findById(id).map(atendente -> {
+
+            if (dadosAtualizados.getNome() != null) {
+                atendente.setNome(dadosAtualizados.getNome());
+            }
+            if (dadosAtualizados.getUsername() != null) {
+                atendente.setUsername(dadosAtualizados.getUsername());
+            }
+            // Atualiza a senha apenas se o admin digitar algo novo
+            if (dadosAtualizados.getPassword() != null && !dadosAtualizados.getPassword().trim().isEmpty()) {
+                atendente.setPassword(dadosAtualizados.getPassword());
+            }
+
+            return ResponseEntity.ok(atendenteRepository.save(atendente));
+
+        }).orElse(ResponseEntity.notFound().build());
+    }
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {
         atendenteRepository.deleteById(id);

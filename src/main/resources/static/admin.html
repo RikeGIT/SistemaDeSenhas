@@ -79,6 +79,27 @@
         </table>
     </div>
 
+    <!-- ATENDENTES -->
+    <div class="section">
+        <h2>Gestão de Atendentes</h2>
+        <div id="form-atendente">
+            <input type="text" id="new-nome" placeholder="Nome Completo" required>
+            <input type="text" id="new-username" placeholder="Usuário" required>
+            <input type="password" id="new-password" placeholder="Senha" required>
+            <select id="new-admin">
+                <option value="false">Atendente Comum</option>
+                <option value="true">Administrador</option>
+            </select>
+            <button class="btn-add" onclick="cadastrarAtendente()">Cadastrar Funcionário</button>
+        </div>
+        <table id="tabela-atendentes">
+            <thead>
+            <tr><th>ID</th><th>Nome</th><th>Usuário</th><th>Cargo</th><th>Ações</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
 </div>
 
 <script>
@@ -309,6 +330,108 @@
             }
         } else {
             carregarTudo();
+        }
+    }
+
+    async function carregarAtendentes() {
+        const response = await fetch('/auth/listar');
+        const atendentes = await response.json();
+        const tbody = document.querySelector('#tabela-atendentes tbody');
+        tbody.innerHTML = "";
+
+        atendentes.forEach(a => {
+            const cargo = a.admin ? "<strong>Admin</strong>" : "Atendente";
+            const botaoAdmin = a.admin ? "" : `<button class="btn-add" onclick="promover(${a.id})">Promover a Admin</button>`;
+
+
+            const botaoEditar = `<button onclick="editarAtendente(${a.id}, '${a.nome}', '${a.username}')">Editar</button>`;
+
+            const row = `<tr>
+                <td>${a.id}</td>
+                <td>${a.nome}</td>
+                <td>${a.username}</td>
+                <td>${cargo}</td>
+                <td>
+                    ${botaoEditar}
+                    ${botaoAdmin}
+                    <button class="btn-del" onclick="eliminarAtendente(${a.id})">Remover</button>
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    async function editarAtendente(id, nomeAtual, usernameAtual) {
+        const novoNome = prompt("Nome completo:", nomeAtual);
+        if (novoNome === null) return;
+
+        const novoUsername = prompt("Nome de usuário (login):", usernameAtual);
+        if (novoUsername === null) return;
+
+        const novaSenha = prompt("Nova senha (deixe em branco para manter a atual):");
+        if (novaSenha === null) return; // Cancelou a operação
+
+        const payload = {
+            nome: novoNome,
+            username: novoUsername
+        };
+
+        if (novaSenha.trim() !== "") {
+            payload.password = novaSenha;
+        }
+
+        const response = await fetch(`/auth/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            carregarAtendentes(); // Recarrega a tabela para mostrar as alterações
+        } else {
+            alert("Erro ao atualizar o atendente.");
+        }
+    }
+
+    async function promover(id) {
+        if(confirm("Deseja dar permissões de administrador a este utilizador?")) {
+            await fetch(`/auth/${id}/tornar-admin`, { method: 'PUT' });
+            carregarAtendentes();
+        }
+
+    }
+
+    async function eliminarAtendente(id) {
+        if(confirm("Remover este atendente do sistema?")) {
+            await fetch(`/auth/${id}`, { method: 'DELETE' });
+            carregarAtendentes();
+        }
+
+    }
+    async function cadastrarAtendente() {
+        const payload = {
+            nome: document.getElementById('new-nome').value,
+            username: document.getElementById('new-username').value,
+            password: document.getElementById('new-password').value,
+            admin: document.getElementById('new-admin').value === "true"
+        };
+
+        const response = await fetch('/auth/registrar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            alert("Novo atendente cadastrado com sucesso!");
+            // Limpa os campos
+            document.getElementById('new-nome').value = "";
+            document.getElementById('new-username').value = "";
+            document.getElementById('new-password').value = "";
+            carregarAtendentes(); // Atualiza a tabela abaixo
+
+        } else {
+            alert("Erro ao cadastrar. O usuário pode já existir.");
         }
     }
 
