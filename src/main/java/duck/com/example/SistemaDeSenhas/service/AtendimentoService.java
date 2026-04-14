@@ -1,8 +1,8 @@
 package duck.com.example.SistemaDeSenhas.service;
 
+import duck.com.example.SistemaDeSenhas.entity.Guiche;
 import duck.com.example.SistemaDeSenhas.entity.Atendimento;
 import duck.com.example.SistemaDeSenhas.entity.Enums.StatusSenha;
-import duck.com.example.SistemaDeSenhas.entity.Guiche;
 import duck.com.example.SistemaDeSenhas.entity.Senha;
 import duck.com.example.SistemaDeSenhas.repository.AtendimentoRepository;
 import duck.com.example.SistemaDeSenhas.repository.GuicheRepository;

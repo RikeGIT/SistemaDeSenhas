@@ -57,14 +57,19 @@
         }
 
         .valor{
-            font-size:90px;
+            font-size: clamp(35px, 6vw, 90px); /* tamanho responsivo automático */
             font-weight:bold;
             background:white;
             color:#1a237e;
-            padding:40px 80px;
+            padding:40px 40px;
             border-radius:12px;
             display:inline-block;
             box-shadow:0 4px 10px rgba(0,0,0,0.1);
+
+            white-space: nowrap;        /* nunca quebra linha */
+            overflow: hidden;           /* evita estourar */
+            text-overflow: ellipsis;    /* coloca ... se ficar muito grande */
+            max-width: 100%;
         }
 
         /* HISTÓRICO */
@@ -203,29 +208,34 @@
 
             const senhaAtualDiv = document.getElementById("senhaAtual");
             const guicheAtualDiv = document.getElementById("guicheAtual");
-            const lista = document.getElementById("lista");
 
             if (atendimentos.length > 0) {
+
                 const atendimentoAtual = atendimentos[0];
+
                 const senhaAtual = atendimentoAtual.senha.codigo;
-                const guicheAtual = atendimentoAtual.guiche.numero;
+
+                const numeroGuiche = atendimentoAtual.guiche.numero;
+
+                const setorGuiche = atendimentoAtual.guiche.setor;
+
+                // NOVO NOME DO GUICHÊ (EX: Caixa 1)
+                const nomeGuiche = `${setorGuiche} ${numeroGuiche}`;
 
                 // 1. Verifica se é uma senha nova para disparar o alerta
                 if (senhaAtual !== ultimaSenhaCodigo) {
 
-                    // Atualiza o DOM imediatamente
                     senhaAtualDiv.innerText = senhaAtual;
-                    guicheAtualDiv.innerText = guicheAtual;
+                    guicheAtualDiv.innerText = nomeGuiche;
 
-                    // Dispara o alerta reforçado (3 vezes no total)
                     executarAlertaReforcado();
 
-                    // Atualiza o controle da última senha
                     ultimaSenhaCodigo = senhaAtual;
                     localStorage.setItem("ultimaSenhaCodigo", ultimaSenhaCodigo);
 
-                    // Gerencia o histórico (Evita duplicatas visuais)
-                    const entradaHistorico = `${senhaAtual} - G${guicheAtual}`;
+                    // HISTÓRICO AGORA COM NOME REAL
+                    const entradaHistorico = `${senhaAtual} - ${nomeGuiche}`;
+
                     if (!historico.includes(entradaHistorico)) {
                         historico.unshift(entradaHistorico);
                         if (historico.length > 10) historico.pop();
@@ -243,7 +253,6 @@
     function executarAlertaReforcado() {
         const som = document.getElementById("audioChamada");
 
-        // Limpa qualquer loop anterior para não encavalar sons
         if (loopSonoro) clearInterval(loopSonoro);
 
         let execucoes = 0;
@@ -253,15 +262,14 @@
             som.play().catch(e => console.log("Aguardando interação para áudio"));
             execucoes++;
 
-            // Se já tocou 3 vezes (inicial + 2 repetições), encerra o loop
             if (execucoes >= 3) {
                 clearInterval(loopSonoro);
                 loopSonoro = null;
             }
         };
 
-        tocar(); // Primeira execução imediata
-        loopSonoro = setInterval(tocar, 10000); // Repete a cada 10 segundos
+        tocar();
+        loopSonoro = setInterval(tocar, 10000);
     }
 
     function renderizarHistorico() {

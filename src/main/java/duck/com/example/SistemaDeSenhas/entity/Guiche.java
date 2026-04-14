@@ -21,8 +21,14 @@ public class Guiche {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Integer numero;
+
+    // NOVO CAMPO
+    private String nome;
+
     private String setor;
+
     private boolean ocupado;
 
     @ManyToOne

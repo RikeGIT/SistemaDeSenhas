@@ -1,7 +1,6 @@
 package duck.com.example.SistemaDeSenhas.controller;
 
 import duck.com.example.SistemaDeSenhas.entity.Atendente;
-import duck.com.example.SistemaDeSenhas.entity.Guiche;
 import duck.com.example.SistemaDeSenhas.repository.AtendenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
