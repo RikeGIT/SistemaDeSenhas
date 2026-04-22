@@ -1,96 +1,73 @@
-# 🏦 Sistema de Senhas - Backend Spring Boot
+# 🚀 Sistema de Gestão de Senhas - Patos/PB
 
-Este projeto é um sistema de gestão de filas e atendimentos, permitindo a geração de senhas com lógica de prioridade, chamada por guichês específicos e monitoramento em tempo real via painel.
-
----
-
-## 🚀 Como Rodar o Projeto
-
-### 1. Requisitos
-
-* Java 21
-* MySQL Server
+Sistema Full Stack desenvolvido para otimizar o fluxo de atendimento em unidades de serviço. A aplicação gerencia desde a emissão de senhas customizadas até o painel de chamadas em tempo real com suporte a múltiplos guichês.
 
 ---
 
-### 2. Configuração do Banco de Dados
+## 🛠️ Tecnologias Principais
 
-Crie a base de dados no seu MySQL:
+**Backend:** Java 21, Spring Boot 3.2.x, Spring Data JPA, Maven
+**Frontend:** HTML5, CSS3 (Flexbox/Grid), JavaScript (Vanilla)
+**Banco de Dados:** MySQL 8.x
+**Relatórios:** JasperReports (Emissão de tickets)
 
-```sql
-CREATE DATABASE sistemadesenhas_db;
+---
+
+## 🌟 Diferenciais da Versão Atual
+
+* **Criação Automática:** O banco de dados e as tabelas são criados automaticamente na primeira execução.
+* **Lógica de Senha Inteligente:** Prefixo baseado nas duas primeiras letras do serviço (ex: CX para Caixa) + sequência de 3 dígitos (ex: CX001).
+* **Painel Multi-Guichê:** Suporte a atendimentos simultâneos com destaque visual e sonoro para a chamada mais recente.
+* **Segurança de Concorrência:** Implementação de *Pessimistic Locking* para evitar que dois guichês chamem a mesma senha simultaneamente.
+
+---
+
+## ⚙️ Configuração e Execução
+
+### 1. Pré-requisitos
+
+* JDK 21 instalado
+* MySQL Server rodando localmente
+
+### 2. Configuração do Banco
+
+A aplicação está configurada para se auto-gerenciar. Você só precisa garantir que as credenciais no arquivo `src/main/resources/application.properties` estejam corretas:
+
+```
+spring.datasource.url=jdbc:mysql://localhost:3306/sistemadesenhas_db?createDatabaseIfNotExist=true
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
 ```
 
-Configure suas credenciais (usuário e senha) no arquivo:
+### 3. Executando a Aplicação
 
-`src/main/resources/application.properties`
+Utilize o Maven Wrapper incluso no projeto:
 
----
+```
+# No Windows
+./mvnw.cmd spring-boot:run
 
-### 3. Carga Inicial de Dados (Obrigatório)
-
-Para que o sistema funcione corretamente, é necessário inserir os dados iniciais. Execute o script abaixo no seu terminal MySQL:
-
-```sql
--- 1. Inserir os 4 Serviços
-INSERT INTO servicos (nome, descricao, sigla) VALUES 
-('Caixa', 'Atendimento financeiro rápido', 'CX'),
-('Gerência', 'Abertura de contas e contratos', 'GR'),
-('Suporte', 'Auxílio técnico e dúvidas', 'SP'),
-('Comercial', 'Vendas e produtos', 'CM');
-
--- 2. Inserir as 4 Prioridades (Pesos definem a ordem de chamada)
-INSERT INTO prioridades (nome, peso) VALUES 
-('Normal', 1),
-('Gestante/Autista', 5),
-('Idoso 60+', 10),
-('Idoso 80+', 20);
-
--- 3. Inserir os 4 Guichês Iniciais
-INSERT INTO guiches (numero, setor, ocupado, servico_id) VALUES 
-(1, 'Térreo', false, 1), -- Guichê 1 atende Caixa
-(2, 'Térreo', false, 1), -- Guichê 2 atende Caixa
-(3, 'Mezanino', false, 2), -- Guichê 3 atende Gerência
-(4, 'Térreo', false, 3); -- Guichê 4 atende Suporte
+# No Linux/Mac
+./mvnw spring-boot:run
 ```
 
 ---
 
-## 🖥️ Interfaces Disponíveis
+## 📂 Estrutura de Acesso
 
-Após rodar a aplicação, acesse no navegador:
+Após iniciar, o sistema estará disponível em:
 
-* **Totem de Senhas (Cliente):**
-  http://localhost:8080/index.html
+```
+http://localhost:8080
+```
 
-* **Painel do Atendente (Funcionário):**
-  http://localhost:8080/atendente.html
-
-* **Painel de Visualização (TV):**
-  http://localhost:8080/painel.html
-
----
-
-## 🛠️ Tecnologias Utilizadas
-
-* Spring Boot 4.0.3
-* Spring Data JPA (Persistência)
-* Lombok (Produtividade)
-* MySQL (Banco de Dados)
-* HTML5 / JavaScript (Interfaces Estáticas)
+* `/index.html` → Totem de autoatendimento (emissão de senhas)
+* `/painel.html` → Painel público (TV/monitor de chamadas)
+* `/login.html` → Acesso para atendentes e administradores
+* `/admin.html` → Gestão de serviços, prioridades, guichês e atendentes
 
 ---
 
-## 📄 Regras de Negócio Implementadas
+## 🛠️ Manutenção Diária
 
-* **Lógica de Código:**
-  Senhas prioritárias começam com `2`, normais com `1`.
-
-* **Ordenação:**
-  A chamada prioriza o peso da prioridade e, em seguida, a ordem de chegada.
-
-* **Persistência de Estado:**
-  O guichê mantém o vínculo com a senha ativa mesmo após atualização da página.
-
-* **Limpeza Automática:**
-  As senhas são removidas do banco de dados imediatamente após a finalização do atendimento.
+ O administrador possui uma ferramenta exclusiva no painel de gestão para Resetar a Fila. Recomenda-se realizar essa operação ao final de cada expediente para reiniciar a numeração sequencial das senhas para o dia seguinte.  
