@@ -27,6 +27,8 @@ public class SenhaService {
     @Autowired
     private SenhaRepository senhaRepository;
 
+    @Autowired
+    private SenhaFactory senhaFactory;
     public Senha gerarNovaSenha(Long servicoId, Long prioridadeId) {
         Servico servico = servicoRepository.findById(servicoId)
                 .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
@@ -42,12 +44,7 @@ public class SenhaService {
 
         String codigoGerado = prefixo + sequencia;
 
-        Senha novaSenha = new Senha();
-        novaSenha.setServico(servico);
-        novaSenha.setPrioridade(prioridade);
-        novaSenha.setDataHoraGeracao(LocalDateTime.now());
-        novaSenha.setStatus(StatusSenha.AGUARDANDO);
-        novaSenha.setCodigo(codigoGerado);
+        Senha novaSenha = senhaFactory.criarSenha(servico, prioridade, codigoGerado);
 
         return senhaRepository.save(novaSenha);
     }

@@ -26,6 +26,9 @@ public class AtendimentoService {
     @Autowired
     private AtendimentoRepository atendimentoRepository;
 
+    @Autowired
+    private NextSenhaStrategy nextSenhaStrategy;
+
     @Transactional
     public Atendimento chamarProxima(Long guicheId) {
         Guiche guiche = guicheRepository.findById(guicheId)
@@ -52,7 +55,7 @@ public class AtendimentoService {
             guicheRepository.save(guiche);
         }
 
-        List<Senha> fila = senhaRepository.encontrarProximaSenha(guiche.getServico());
+        List<Senha> fila = nextSenhaStrategy.encontrarProxima(guiche.getServico());
 
         if (fila.isEmpty()) {
             return null;
